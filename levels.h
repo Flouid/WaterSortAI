@@ -7,6 +7,7 @@
 
 #include "GameState.h"
 
+void invalid_tube();
 void l1();
 
 #endif //WATERSORT_LEVELS_H

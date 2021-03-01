@@ -15,3 +15,13 @@ void l1()
 
     board.print_board();
 }
+
+void invalid_tube()
+{
+    Tube t1("Tube 1", {"green", "blue", "black", "empty"});
+
+    GameState board;
+    board.add_tube(t1);
+
+    board.print_board();
+}

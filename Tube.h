@@ -9,21 +9,23 @@
 #include <utility>
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 class Tube
 {
 public:
     Tube() : Tube("Tube 0") {}
-    explicit Tube(std::string tube_name) :
-            Tube(std::move(tube_name), {"empty", "empty", "empty", "empty"}) {}
-    Tube(std::string tube_name, std::vector<std::string> tube_values) :
-            name(std::move(tube_name)), values(std::move(tube_values)) {}
+    explicit Tube(std::string tube_name) : Tube(std::move(tube_name),{"empty", "empty", "empty", "empty"}) {}
+    Tube(std::string tube_name, std::vector<std::string> tube_values);
 
     void print_tube() const;
 
 private:
     std::vector<std::string> values;
     std::string name;
+    int free_spaces;
+
+    bool is_valid() const;
 };
 
 #endif //WATERSORT_TUBE_H
