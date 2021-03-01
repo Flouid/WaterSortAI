@@ -24,6 +24,6 @@ void GameState::print_board() const
     for(const Tube &tube: board) {
         tube.print_tube();
     }
-    std::cout << std::endl << "There are " << num_tubes << " tubes" << std::endl;
+    std::cout << "There are " << num_tubes << " tubes" << std::endl;
 }
 
