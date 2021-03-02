@@ -24,10 +24,10 @@ public:
 private:
     std::vector<std::string> values;
     std::string name;
+    std::string top_color;
     bool empty;
     int free_spaces;
     int top_color_depth;
-    std::string top_color;
 
     bool is_valid() const;
     bool is_empty() const;

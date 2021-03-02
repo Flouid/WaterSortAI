@@ -158,7 +158,31 @@ bool Tube::pour(Tube &target)
     if (empty || top_color != target.top_color || target.free_spaces == 0)
         return false;
 
-    // iterated through every slot in the source tube...
-    // for (int i = 0; i < 4; )
+    // find the index in the target tube of the deepest empty slot
+    int deepest_empty_slot;
+    std::string pour_color = top_color;
+
+    // iterate through every slot in the source tube...
+    for (int i = 0; i < 4; ++i) {
+        // skip empty slots
+        if (values[i] == "empty")
+            continue;
+        // starting at the deepest empty slot, fill upward
+        deepest_empty_slot = target.free_spaces - 1;
+        if (top_color == pour_color) {
+            target.values[deepest_empty_slot] = top_color;
+            values[i] = "empty";
+            top_color = get_top_color();
+            --free_spaces;
+            // exit condition for the loop, pour is complete
+            if(free_spaces == 0) {
+                return true;
+            }
+        }
+        // no more of that color to pour
+        else {
+            break;
+        }
+    }
     return true;
 }

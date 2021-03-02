@@ -20,7 +20,7 @@ int main() {
     Tube t6("Tube 6", {"green", "dark blue", "red", "black"});
     pour_test(t5, t6);      // invalid, target full
 
-    Tube t7("Tube 7", {"empty", "green", "green", "green"});
-    Tube t8("Tube 8", {"empty", "empty", "empty", "green"});
+    Tube t7("Tube 7", {"empty", "empty", "empty", "green"});
+    Tube t8("Tube 8", {"empty", "green", "green", "green"});
     pour_test(t7, t8);      // valid single pour
 }
