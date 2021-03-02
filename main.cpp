@@ -27,9 +27,29 @@ int main() {
 //    pour_test(Tube({"green", "green", "green", "green"}), Tube("Tube"));
 
     // TESTING GET_NUM_MOVES
-    GameState board({Tube({"empty", "empty", "empty", "orange"}),
+
+    // l1
+    GameState board1({Tube({"empty", "empty", "empty", "orange"}),
                      Tube({"empty", "orange", "orange", "orange"})});
-    board.print_board();
-    Solver solver(board);
-    cout << "Number of valid pours: " << solver.get_num_valid_pours() << endl;
+    board1.print_board();
+    Solver solver1(board1);
+    cout << "Number of valid pours: " << solver1.get_num_valid_pours() << endl;
+
+    // l2
+    GameState board2({Tube("Tube 1", {"orange", "dark blue", "orange", "dark blue"}),
+                      Tube("Tube 2", {"dark blue", "orange", "dark blue", "orange"}),
+                      Tube("Tube 3")});
+    board2.print_board();
+    Solver solver2(board2);
+    cout << "Number of valid pours: " << solver2.get_num_valid_pours() << endl;
+
+    // l3
+    GameState board3({Tube("Tube 1", {"dark blue", "red", "orange", "dark blue"}),
+                      Tube("Tube 2", {"dark blue", "red", "orange", "orange"}),
+                      Tube("Tube 3", {"red", "orange", "dark blue", "red"})});
+    board3.init_board();
+    board3.print_board();
+    Solver solver3(board3);
+    cout << "Number of valid pours: " << solver3.get_num_valid_pours() << endl;
+
 }
