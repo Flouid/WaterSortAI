@@ -179,7 +179,7 @@ bool Tube::pour(Tube &target)
             ++free_spaces;
             --target.free_spaces;
             // exit condition for the loop, pour is complete
-            if(free_spaces == 0) {
+            if(target.free_spaces == 0) {
                 break;
             }
         }

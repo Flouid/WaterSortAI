@@ -7,30 +7,17 @@
 void invalid_tube_init()
 {
     Tube t1("Tube 1", {"green", "blue", "black", "empty"});
-
     GameState board;
     board.add_tube(t1);
-
     board.print_board();
 }
 
-void pour_test(const Tube &t1, const Tube &t2) {
-    std::vector<Tube> tubes;
-    tubes.push_back(t1);
-    tubes.push_back(t2);
-
-    GameState board(tubes);
-    board.print_board();
-
-    bool worked = board.board[0].pour(board.board[1]);
-    printf("Pour Success: %d\n", worked);
-    board.print_board();
-}
-
-void node_test(const GameState &state)
+void pour_overflow()
 {
-    Node node(state);
-    node.print_state();
+    GameState state({Tube("Tube 0", {"empty", "orange", "orange", "orange"}),
+                     Tube("Tube 1", {"empty", "orange", "dark blue", "red"})});
+    Solver solver(state);
+    solver.populate_tree();
 }
 
 void l1()

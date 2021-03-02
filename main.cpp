@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int main() {
-    //l1();
-    l2();
+int main()
+{
+    l3();
 }

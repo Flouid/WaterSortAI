@@ -9,8 +9,7 @@
 #include "Solver.h"
 
 void invalid_tube();
-void pour_test(const Tube& t1, const Tube &t2);
-void node_test(const GameState &state);
+void pour_overflow();
 void l1();
 void l2();
 void l3();
