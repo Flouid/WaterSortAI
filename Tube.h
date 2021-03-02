@@ -14,8 +14,9 @@
 class Tube
 {
 public:
-    Tube() : Tube("Tube 0") {}
+    Tube() : Tube("Tube") {}
     explicit Tube(std::string tube_name) : Tube(std::move(tube_name),{"empty", "empty", "empty", "empty"}) {}
+    explicit Tube(std::vector<std::string> tube_values) : Tube("Tube", std::move(tube_values)) {}
     Tube(std::string tube_name, std::vector<std::string> tube_values);
 
     void print_tube() const;

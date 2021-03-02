@@ -155,11 +155,15 @@ void Tube::print_tube() const
  */
 bool Tube::pour(Tube &target)
 {
-    if (empty || top_color != target.top_color || target.free_spaces == 0)
+    // if the source is empty, invalid. If the target has no free spaces, invalid.
+    // If top colors don't match AND the target isn't empty, invalid.
+    if (empty || target.free_spaces == 0
+        || (top_color != target.top_color && !target.empty))
         return false;
 
     // find the index in the target tube of the deepest empty slot
     int deepest_empty_slot;
+    // set the original pour color
     std::string pour_color = top_color;
 
     // iterate through every slot in the source tube...
@@ -169,7 +173,7 @@ bool Tube::pour(Tube &target)
             continue;
         // starting at the deepest empty slot, fill upward
         deepest_empty_slot = target.free_spaces - 1;
-        // if the colors currently match, pour one unit
+        // if the top color hasn't changed...
         if (top_color == pour_color) {
             target.values[deepest_empty_slot] = top_color;
             values[i] = "empty";
@@ -188,7 +192,9 @@ bool Tube::pour(Tube &target)
     }
     // recalculate some data for the tube
     empty = is_empty();
+    target.empty = target.is_empty();
     top_color_depth = calculate_top_color_depth();
     target.top_color_depth = target.calculate_top_color_depth();
+    target.top_color = target.get_top_color();
     return true;
 }

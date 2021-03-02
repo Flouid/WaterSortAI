@@ -8,23 +8,20 @@ int main() {
 //    l3();
 
     // TESTING POUR FUNCTION
-    Tube t1("Tube 1");
-    Tube t2("Tube 2");
-    pour_test(t1, t2);      // invalid, source empty
 
-    Tube t3("Tube 3", {"empty", "empty", "dark blue", "red"});
-    Tube t4("Tube 4", {"empty", "empty", "red", "dark blue"});
-    pour_test(t3, t4);      // invalid, mismatched colors
-
-    Tube t5("Tube 5", {"empty", "green", "green", "green"});
-    Tube t6("Tube 6", {"green", "dark blue", "red", "black"});
-    pour_test(t5, t6);      // invalid, target full
-
-    Tube t7("Tube 7", {"empty", "empty", "empty", "green"});
-    Tube t8("Tube 8", {"empty", "green", "green", "green"});
-    pour_test(t7, t8);      // valid single pour
-
-    Tube t9("Tube 9", {"empty", "green", "green", "red"});
-    Tube t10("Tube 10");
-    pour_test(t9, t10);
+    // invalid, source empty
+    pour_test(Tube(), Tube());
+    // invalid, mismatched colors
+    pour_test(Tube({"empty", "empty", "dark blue", "red"}),
+              Tube({"empty", "empty", "red", "dark blue"}));
+    // invalid, target full
+    pour_test(Tube({"empty", "green", "green", "green"}),
+              Tube({"green", "dark blue", "red", "black"}));
+    // valid single pour
+    pour_test(Tube({"empty", "empty", "empty", "green"}),
+              Tube({"empty", "green", "green", "green"}));
+    // valid double pour
+    pour_test(Tube({"empty", "green", "green", "red"}), Tube("Tube"));
+    // valid 4 slot pour
+    pour_test(Tube({"green", "green", "green", "green"}), Tube("Tube"));
 }
