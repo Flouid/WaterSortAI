@@ -155,8 +155,10 @@ void Tube::print_tube() const
  */
 bool Tube::pour(Tube &target)
 {
-    if (empty || top_color != target.top_color)
+    if (empty || top_color != target.top_color || target.free_spaces == 0)
         return false;
 
+    // iterated through every slot in the source tube...
+    // for (int i = 0; i < 4; )
     return true;
 }
