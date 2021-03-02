@@ -27,18 +27,10 @@ void pour_test(const Tube &t1, const Tube &t2) {
     board.print_board();
 }
 
-void num_valid_pours_test(const GameState &state)
+void node_test(const GameState &state)
 {
-    state.print_board();
-    Solver solver(state);
-    std::cout << "The number of valid pours is: " << solver.get_num_valid_pours() << std::endl << std::endl;
-}
-
-void is_game_complete_test(const GameState &state)
-{
-    state.print_board();
-    Solver solver(state);
-    std::cout << "The game is complete: " << solver.is_game_complete() << std::endl << std::endl;
+    Node node(state);
+    node.print_state();
 }
 
 void l1()

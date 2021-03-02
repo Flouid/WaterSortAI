@@ -5,11 +5,29 @@
 #include "Solver.h"
 
 /**
+ * Detailed constructor to create a node.
+ * Is given a game state and a pointer to its parent,
+ * determines the number of valid pours and whether or not the board is complete.
+ *
+ * @param gameState current state of the board
+ * @param par pointer to the parent node
+ */
+Node::Node(GameState gameState, Node* par, std::string move)
+{
+    state = std::move(gameState);
+    parent = par;
+    move_description = std::move(move);
+
+    num_valid_pours = get_num_valid_pours();
+    complete = is_game_complete();
+}
+
+/**
  * Calculates the total number of valid pour operations for the current game state
  *
  * @return int representing total number of valid pours
  */
-int Solver::get_num_valid_pours()
+int Node::get_num_valid_pours()
 {
     int valid_pours = 0;
     // iterate through every source tube
@@ -32,7 +50,7 @@ int Solver::get_num_valid_pours()
  *
  * @return bool representing whether or not the game is complete
  */
-bool Solver::is_game_complete() const
+bool Node::is_game_complete() const
 {
     int num_solved_tubes = 0;
     // iterate through every tube
@@ -42,4 +60,14 @@ bool Solver::is_game_complete() const
             ++num_solved_tubes;
     }
     return num_solved_tubes == state.get_num_tubes();
+}
+
+/**
+ * Prints the entire state of the node.
+ */
+void Node::print_state() const
+{
+    printf("Move to get here: %s\n", move_description.c_str());
+    printf("Game complete = %d\tValid moves = %d\n", complete, num_valid_pours);
+    state.print_board();
 }

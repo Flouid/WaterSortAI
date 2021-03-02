@@ -26,14 +26,14 @@ int main() {
     // valid 4 slot pour
     pour_test(Tube({"green", "green", "green", "green"}), Tube("Tube"));
 
-    // TESTING GET_NUM_MOVES
+    // TESTING NODE FUNCTIONALITY
 
     // l1
-    num_valid_pours_test(GameState(
+    node_test(GameState(
             {Tube("Tube 0", {"empty", "empty", "empty", "orange"}),
              Tube("Tube 1", {"empty", "orange", "orange", "orange"})}));
     // l2
-    num_valid_pours_test(GameState(
+    node_test(GameState(
             {Tube("Tube 0", {"orange", "dark blue", "orange", "dark blue"}),
              Tube("Tube 1", {"dark blue", "orange", "dark blue", "orange"}),
              Tube("Tube 2")}));
@@ -43,9 +43,7 @@ int main() {
              Tube("Tube 1", {"dark blue", "red", "orange", "orange"}),
              Tube("Tube 2", {"red", "orange", "dark blue", "red"})});
     state_l3.init_board();
-    num_valid_pours_test(state_l3);
-
-    // TESTING IS_GAME_COMPLETE
+    node_test(state_l3);
 
     GameState solved_test(
             {Tube("Tube 0", {"dark blue", "dark blue", "dark blue", "dark blue"}),
@@ -53,5 +51,5 @@ int main() {
              Tube("Tube 2", {"pink", "pink", "pink", "pink"}),
              Tube("Tube 3", {"red", "red", "red", "red"})});
     solved_test.init_board();
-    is_game_complete_test(solved_test);
+    node_test(solved_test);
 }
