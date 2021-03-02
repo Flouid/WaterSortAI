@@ -21,9 +21,10 @@ void GameState::init_board()
 
 void GameState::print_board() const
 {
+    std::cout << "Board State:\n";
     for(const Tube &tube: board) {
         tube.print_tube();
     }
-    std::cout << "There are " << num_tubes << " tubes" << std::endl;
+    std::cout << "There are " << num_tubes << " tubes\n\n";
 }
 

@@ -9,5 +9,7 @@
 
 void invalid_tube();
 void l1();
+void l2();
+void l3();
 
 #endif //WATERSORT_LEVELS_H

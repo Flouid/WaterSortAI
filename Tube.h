@@ -24,8 +24,11 @@ private:
     std::vector<std::string> values;
     std::string name;
     int free_spaces;
+    int top_color_depth;
 
     bool is_valid() const;
+    int calculate_free_spaces();
+    int calculate_top_color_depth();
 };
 
 #endif //WATERSORT_TUBE_H
