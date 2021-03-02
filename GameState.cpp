@@ -20,8 +20,8 @@ void GameState::add_tube(const Tube &tube)
  */
 void GameState::init_board()
 {
-    std::string name_1 = "Tube " + std::to_string(num_tubes + 1);
-    std::string name_2 = "Tube " + std::to_string(num_tubes + 2);
+    std::string name_1 = "Tube " + std::to_string(num_tubes);
+    std::string name_2 = "Tube " + std::to_string(num_tubes + 1);
 
     add_tube(Tube(name_1));
     add_tube(Tube(name_2));
