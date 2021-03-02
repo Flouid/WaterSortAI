@@ -19,16 +19,21 @@ public:
     Tube(std::string tube_name, std::vector<std::string> tube_values);
 
     void print_tube() const;
+    bool pour(Tube &target);
 
 private:
     std::vector<std::string> values;
     std::string name;
+    bool empty;
     int free_spaces;
     int top_color_depth;
+    std::string top_color;
 
     bool is_valid() const;
-    int calculate_free_spaces();
-    int calculate_top_color_depth();
+    bool is_empty() const;
+    int calculate_free_spaces() const;
+    int calculate_top_color_depth() const;
+    std::string get_top_color() const;
 };
 
 #endif //WATERSORT_TUBE_H

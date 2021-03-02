@@ -19,6 +19,8 @@ Tube::Tube(std::string tube_name, std::vector<std::string> tube_values) : name(s
     }
     free_spaces = calculate_free_spaces();
     top_color_depth = calculate_top_color_depth();
+    empty = is_empty();
+    top_color = get_top_color();
 }
 
 /**
@@ -47,11 +49,25 @@ bool Tube::is_valid() const
 }
 
 /**
+ * Checks if a tube is completely empty.
+ *
+ * @return bool representing whether or not the tube is empty.
+ */
+bool Tube::is_empty() const
+{
+    if (std::all_of(values.begin(), values.end(),
+                    [](const std::string &value){return value == "empty";}))
+        return true;
+    else
+        return false;
+}
+
+/**
  * Calculates how many slots from the top down are free.
  *
  * @return int representing how many free spaces the tube has.
  */
-int Tube::calculate_free_spaces()
+int Tube::calculate_free_spaces() const
 {
     int free_slots = 0;
     // iterates over all slots and counts how many are empty
@@ -67,7 +83,7 @@ int Tube::calculate_free_spaces()
  *
  * @return int representing how many slots from the top are filled with the same color.
  */
-int Tube::calculate_top_color_depth()
+int Tube::calculate_top_color_depth() const
 {
     std::string color;
     bool color_set = false;
@@ -93,14 +109,54 @@ int Tube::calculate_top_color_depth()
 }
 
 /**
+ * Gets the color at the top of the tube.
+ *
+ * @return string representing the color at the top of the tube.
+ */
+std::string Tube::get_top_color() const
+{
+    std::string top_color;
+    bool top_color_set = false;
+    // iterate through every color, if the value isn't empty then it's the top color.
+    for (const std::string &value: values) {
+        if (value != "empty") {
+            top_color = value;
+            top_color_set = true;
+            break;
+        }
+    }
+    // if all of the values were empty and the color wasn't set, set it to empty.
+    if (!top_color_set) {
+        top_color = "empty";
+    }
+    return top_color;
+}
+
+/**
  * Prints all of the data associated with a tube to the console.
  */
 void Tube::print_tube() const
 {
-    std::cout << '\t' << name << ':' << "\tFree Spaces: " << free_spaces <<
-                 "\tTop Color Depth: " << top_color_depth << std::endl;
+    printf("\t%s\tFree Spaces = %d,\tTop Color Depth = %d,\tTop Color = %s,\tIs Empty = %d\n",
+            name.c_str(), free_spaces, top_color_depth, top_color.c_str(), empty);
     for(const std::string &value: values) {
         std::cout << "\t\t" << value << std::endl;
     }
     std::cout << std::endl;
+}
+
+/**
+ * Attempts to "pour" the current tube into a target tube.
+ * Can only be successful if the target is empty or the two tubes share top colors.
+ * If they share top colors, only pour as many slots as the target has free spaces.
+ *
+ * @param target tube to pour into
+ * @return bool representing whether or not the operation was successful.
+ */
+bool Tube::pour(Tube &target)
+{
+    if (empty || top_color != target.top_color)
+        return false;
+
+    return true;
 }

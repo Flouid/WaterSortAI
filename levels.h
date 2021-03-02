@@ -8,6 +8,8 @@
 #include "GameState.h"
 
 void invalid_tube();
+void invalid_pour_source_empty();
+void invalid_pour_different_colors();
 void l1();
 void l2();
 void l3();
