@@ -207,5 +207,13 @@ bool Tube::pour(Tube &target)
  */
 bool Tube::is_valid_pour(Tube &target) const
 {
-    return !(empty || target.free_spaces == 0 || (top_color != target.top_color && !target.empty));
+    if (empty || target.free_spaces == 0 || (top_color != target.top_color && !target.empty))
+        return false;
+
+    // if the source tube has only one color in it and the target is empty, forbid the move as it can't contribute
+    bool all_one_color = 4 - top_color_depth == free_spaces;
+    if (all_one_color && target.is_empty())
+        return false;
+
+    return true;
 }
