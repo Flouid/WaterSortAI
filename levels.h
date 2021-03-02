@@ -8,8 +8,7 @@
 #include "GameState.h"
 
 void invalid_tube();
-void invalid_pour_source_empty();
-void invalid_pour_different_colors();
+void pour_test(const Tube& t1, const Tube &t2);
 void l1();
 void l2();
 void l3();

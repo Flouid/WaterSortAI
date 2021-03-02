@@ -14,25 +14,10 @@ void invalid_tube_init()
     board.print_board();
 }
 
-void invalid_pour_source_empty()
-{
+void pour_test(const Tube &t1, const Tube &t2) {
     std::vector<Tube> tubes;
-    tubes.emplace_back("Tube 1");
-    tubes.emplace_back("Tube 2");
-
-    GameState board(tubes);
-    board.print_board();
-
-    bool worked = board.board[0].pour(board.board[1]);
-    printf("Pour Success: %d\n", worked);
-    board.print_board();
-}
-
-void invalid_pour_different_colors()
-{
-    std::vector<Tube> tubes;
-    tubes.push_back(Tube("Tube 1", {"empty", "empty", "dark blue", "red"}));
-    tubes.push_back(Tube("Tube 2", {"empty", "empty", "red", "dark blue"}));
+    tubes.push_back(t1);
+    tubes.push_back(t2);
 
     GameState board(tubes);
     board.print_board();
