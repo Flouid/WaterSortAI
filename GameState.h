@@ -9,11 +9,16 @@
 
 #include "Tube.h"
 
+/**
+ * Class representing the current state of a given board.
+ * Has methods for initializing, adding tubes, and printing the board.
+ */
 class GameState
 {
 public:
     GameState() : num_tubes(0) {}
     explicit GameState(std::vector<Tube> tubes) : board(std::move(tubes)), num_tubes(board.size()) {}
+    GameState(const GameState &state);
 
     void add_tube(const Tube &tube);
     void init_board();

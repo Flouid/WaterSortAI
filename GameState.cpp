@@ -5,6 +5,17 @@
 #include "GameState.h"
 
 /**
+ * Copy constructor.
+ *
+ * @param state of the board to copy
+ */
+GameState::GameState(const GameState &state)
+{
+    board = state.board;
+    num_tubes = state.num_tubes;
+}
+
+/**
  * Add a tube to the game state
  *
  * @param tube

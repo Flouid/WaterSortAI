@@ -14,17 +14,20 @@
  */
 class Node {
 public:
-    explicit Node(GameState gameState) : Node(std::move(gameState), nullptr, "Initialization") {}
-    Node(GameState gameState, Node* par, std::string move);
+    explicit Node(const GameState &gameState) : Node(gameState, nullptr, "Initialization", 0) {}
+    Node(const GameState &gameState, Node* par, std::string move, int dep);
 
     int get_num_valid_pours();
     bool is_game_complete() const;
     void print_state() const;
 
+    bool populate_children();
+
     GameState state;
     Node* parent;
     std::vector<Node*> children;
     std::string move_description;
+    int depth;
 
     int num_valid_pours;
     bool complete;
@@ -33,7 +36,9 @@ public:
 class Solver
 {
 public:
-    explicit Solver(GameState gameState) : root(new Node(std::move(gameState))) {}
+    explicit Solver(const GameState &gameState) : root(new Node(gameState)) {}
+
+    bool populate_tree();
 
     Node* root;
 };
