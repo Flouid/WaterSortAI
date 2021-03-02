@@ -4,12 +4,20 @@
 
 #include "GameState.h"
 
+/**
+ * Add a tube to the game board
+ *
+ * @param tube
+ */
 void GameState::add_tube(const Tube &tube)
 {
     board.push_back(tube);
     ++num_tubes;
 }
 
+/**
+ * Add the two empty tubes that are included with the majority of levels.
+ */
 void GameState::init_board()
 {
     std::string name_1 = "Tube " + std::to_string(num_tubes + 1);
@@ -19,6 +27,9 @@ void GameState::init_board()
     add_tube(Tube(name_2));
 }
 
+/**
+ * Print the state of the game board.
+ */
 void GameState::print_board() const
 {
     std::cout << "Board State:\n";
