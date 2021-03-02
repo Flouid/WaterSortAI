@@ -53,15 +53,15 @@ int main() {
 //    solved_test.init_board();
 //    node_test(solved_test);
 
-    GameState state_l1(
-            {Tube("Tube 0", {"empty", "empty", "empty", "orange"}),
-             Tube("Tube 1", {"empty", "orange", "orange", "orange"})});
-    Solver solver_l1(state_l1);
-    if(solver_l1.populate_tree())
-        cout << "Solution found\n";
-    else
-        cout << "Solution not found\n";
-
+//    GameState state_l1(
+//            {Tube("Tube 0", {"empty", "empty", "empty", "orange"}),
+//             Tube("Tube 1", {"empty", "orange", "orange", "orange"})});
+//    Solver solver_l1(state_l1);
+//    if(solver_l1.populate_tree())
+//        cout << "Solution found\n";
+//    else
+//        cout << "Solution not found\n";
+//
 //    GameState state_l2(
 //            {Tube("Tube 0", {"orange", "dark blue", "orange", "dark blue"}),
 //             Tube("Tube 1", {"dark blue", "orange", "dark blue", "orange"}),
@@ -72,4 +72,14 @@ int main() {
 //    else
 //        cout << "Solution not found\n";
 
+    GameState state_l3(
+            {Tube("Tube 0", {"dark blue", "red", "orange", "dark blue"}),
+             Tube("Tube 1", {"dark blue", "red", "orange", "orange"}),
+             Tube("Tube 2", {"red", "orange", "dark blue", "red"})});
+    state_l3.init_board();
+    Solver solver_l3(state_l3);
+    if(solver_l3.populate_tree())
+        cout << "Solution found\n";
+    else
+        cout << "Solution not found\n";
 }

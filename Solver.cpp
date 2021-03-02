@@ -69,7 +69,7 @@ bool Node::is_game_complete() const
  * For each valid move possible, copies the gamestate to a new child node and performs that move.
  * If a move results in a completed board state, stop and return true. Otherwise, return false.
  *
- * @return
+ * @return bool representing whether or not a child node was found.
  */
 bool Node::populate_children()
 {
@@ -97,9 +97,15 @@ bool Node::populate_children()
                 // insert it into the children
                 children.push_back(node);
 
+                node->print_state();
+
                 // if a complete board state is found, no need to calculate more children.
                 if (node->complete) {
                     return true;
+                }
+                // if no complete board state was found, populate the children of the new node.
+                else {
+                    return node->populate_children();
                 }
             }
         }
@@ -112,14 +118,11 @@ bool Node::populate_children()
     return false;
 }
 
-bool Solver::populate_tree()
+bool Solver::populate_tree() const
 {
-    bool return_value = root->populate_children();
-
     root->print_state();
-    for (const Node *child : root->children) {
-        child->print_state();
-    }
+
+    bool return_value = root->populate_children();
 
     return return_value;
 }

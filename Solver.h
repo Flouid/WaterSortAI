@@ -33,12 +33,15 @@ public:
     bool complete;
 };
 
+/**
+ * Class tracking the root of the non-binary tree and providing a method to populate the entire tree.
+ */
 class Solver
 {
 public:
     explicit Solver(const GameState &gameState) : root(new Node(gameState)) {}
 
-    bool populate_tree();
+    bool populate_tree() const;
 
     Node* root;
 };
