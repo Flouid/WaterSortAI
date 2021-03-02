@@ -155,10 +155,8 @@ void Tube::print_tube() const
  */
 bool Tube::pour(Tube &target)
 {
-    // if the source is empty, invalid. If the target has no free spaces, invalid.
-    // If top colors don't match AND the target isn't empty, invalid.
-    if (empty || target.free_spaces == 0
-        || (top_color != target.top_color && !target.empty))
+    // if the pour isn't valid, stop here
+    if (!is_valid_pour(target))
         return false;
 
     // find the index in the target tube of the deepest empty slot
@@ -197,4 +195,17 @@ bool Tube::pour(Tube &target)
     target.top_color_depth = target.calculate_top_color_depth();
     target.top_color = target.get_top_color();
     return true;
+}
+
+/**
+ * Checks if pouring to target is possible.
+ * It is only possible if the source isn't empty, the target has at least one free space,
+ * and the top colors match or the target is empty.
+ *
+ * @param target tube
+ * @return bool representing whether or not a pour is possible
+ */
+bool Tube::is_valid_pour(Tube &target) const
+{
+    return !(empty || target.free_spaces == 0 || (top_color != target.top_color && !target.empty));
 }

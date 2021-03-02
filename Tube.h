@@ -21,6 +21,7 @@ public:
 
     void print_tube() const;
     bool pour(Tube &target);
+    bool is_valid_pour(Tube &target) const;
 
 private:
     std::vector<std::string> values;
