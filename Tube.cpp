@@ -169,14 +169,16 @@ bool Tube::pour(Tube &target)
             continue;
         // starting at the deepest empty slot, fill upward
         deepest_empty_slot = target.free_spaces - 1;
+        // if the colors currently match, pour one unit
         if (top_color == pour_color) {
             target.values[deepest_empty_slot] = top_color;
             values[i] = "empty";
             top_color = get_top_color();
-            --free_spaces;
+            ++free_spaces;
+            --target.free_spaces;
             // exit condition for the loop, pour is complete
             if(free_spaces == 0) {
-                return true;
+                break;
             }
         }
         // no more of that color to pour
@@ -184,5 +186,9 @@ bool Tube::pour(Tube &target)
             break;
         }
     }
+    // recalculate some data for the tube
+    empty = is_empty();
+    top_color_depth = calculate_top_color_depth();
+    target.top_color_depth = target.calculate_top_color_depth();
     return true;
 }

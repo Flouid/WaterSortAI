@@ -23,4 +23,8 @@ int main() {
     Tube t7("Tube 7", {"empty", "empty", "empty", "green"});
     Tube t8("Tube 8", {"empty", "green", "green", "green"});
     pour_test(t7, t8);      // valid single pour
+
+    Tube t9("Tube 9", {"empty", "green", "green", "red"});
+    Tube t10("Tube 10");
+    pour_test(t9, t10);
 }
