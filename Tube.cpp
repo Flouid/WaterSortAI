@@ -215,5 +215,9 @@ bool Tube::is_valid_pour(Tube &target) const
     if (all_one_color && target.is_empty())
         return false;
 
+    // if it's not possible to pour all of the top color out, don't
+    if (top_color_depth > target.free_spaces)
+        return false;
+
     return true;
 }
