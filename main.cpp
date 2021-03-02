@@ -34,7 +34,6 @@ int main() {
     board1.print_board();
     Solver solver1(board1);
     cout << "Number of valid pours: " << solver1.get_num_valid_pours() << endl;
-
     // l2
     GameState board2({Tube("Tube 1", {"orange", "dark blue", "orange", "dark blue"}),
                       Tube("Tube 2", {"dark blue", "orange", "dark blue", "orange"}),
@@ -42,7 +41,6 @@ int main() {
     board2.print_board();
     Solver solver2(board2);
     cout << "Number of valid pours: " << solver2.get_num_valid_pours() << endl;
-
     // l3
     GameState board3({Tube("Tube 1", {"dark blue", "red", "orange", "dark blue"}),
                       Tube("Tube 2", {"dark blue", "red", "orange", "orange"}),

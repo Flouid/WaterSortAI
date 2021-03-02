@@ -12,15 +12,15 @@
  */
 Tube::Tube(std::string tube_name, std::vector<std::string> tube_values) : name(std::move(tube_name)), values(std::move(tube_values))
 {
-    if (!is_valid()) {
+    if (!calculate_is_valid()) {
         // if the tube isn't valid, exit immediately and notify the user.
         std::cout << "Assertion failed, invalid tube" << std::endl;
-        assert(is_valid());
+        assert(calculate_is_valid());
     }
     free_spaces = calculate_free_spaces();
     top_color_depth = calculate_top_color_depth();
-    empty = is_empty();
-    top_color = get_top_color();
+    empty = calculate_is_empty();
+    top_color = calculate_top_color();
 }
 
 /**
@@ -28,7 +28,7 @@ Tube::Tube(std::string tube_name, std::vector<std::string> tube_values) : name(s
  *
  * @return boolean representing if the tube is valid or not.
  */
-bool Tube::is_valid() const
+bool Tube::calculate_is_valid() const
 {
     // checks the bottom of the tube. If empty, everything above must also be empty
     if(this->values[3] == "empty") {
@@ -53,7 +53,7 @@ bool Tube::is_valid() const
  *
  * @return bool representing whether or not the tube is empty.
  */
-bool Tube::is_empty() const
+bool Tube::calculate_is_empty() const
 {
     if (std::all_of(values.begin(), values.end(),
                     [](const std::string &value){return value == "empty";}))
@@ -113,23 +113,23 @@ int Tube::calculate_top_color_depth() const
  *
  * @return string representing the color at the top of the tube.
  */
-std::string Tube::get_top_color() const
+std::string Tube::calculate_top_color() const
 {
-    std::string top_color;
+    std::string top;
     bool top_color_set = false;
     // iterate through every color, if the value isn't empty then it's the top color.
     for (const std::string &value: values) {
         if (value != "empty") {
-            top_color = value;
+            top = value;
             top_color_set = true;
             break;
         }
     }
     // if all of the values were empty and the color wasn't set, set it to empty.
     if (!top_color_set) {
-        top_color = "empty";
+        top = "empty";
     }
-    return top_color;
+    return top;
 }
 
 /**
@@ -175,7 +175,7 @@ bool Tube::pour(Tube &target)
         if (top_color == pour_color) {
             target.values[deepest_empty_slot] = top_color;
             values[i] = "empty";
-            top_color = get_top_color();
+            top_color = calculate_top_color();
             ++free_spaces;
             --target.free_spaces;
             // exit condition for the loop, pour is complete
@@ -189,11 +189,11 @@ bool Tube::pour(Tube &target)
         }
     }
     // recalculate some data for the tube
-    empty = is_empty();
-    target.empty = target.is_empty();
+    empty = calculate_is_empty();
+    target.empty = target.calculate_is_empty();
     top_color_depth = calculate_top_color_depth();
     target.top_color_depth = target.calculate_top_color_depth();
-    target.top_color = target.get_top_color();
+    target.top_color = target.calculate_top_color();
     return true;
 }
 

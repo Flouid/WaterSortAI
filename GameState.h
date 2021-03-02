@@ -19,7 +19,7 @@ public:
     void init_board();
     void print_board() const;
 
-    int get_num_tubes() {return num_tubes;}
+    int get_num_tubes() const {return num_tubes;}
 
     std::vector<Tube> board;
 

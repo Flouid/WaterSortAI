@@ -12,12 +12,13 @@
 class Solver
 {
 public:
-    Solver(GameState gameState) : board(std::move(gameState)) {}
+    explicit Solver(GameState gameState) : state(std::move(gameState)) {}
 
     int get_num_valid_pours();
+    bool is_game_complete() const;
 
 private:
-    GameState board;
+    GameState state;
 };
 
 #endif //WATERSORT_SOLVER_H

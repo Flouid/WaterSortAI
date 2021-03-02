@@ -5,7 +5,7 @@
 #include "GameState.h"
 
 /**
- * Add a tube to the game board
+ * Add a tube to the game state
  *
  * @param tube
  */
@@ -28,7 +28,7 @@ void GameState::init_board()
 }
 
 /**
- * Print the state of the game board.
+ * Print the state of the game state.
  */
 void GameState::print_board() const
 {
@@ -38,4 +38,6 @@ void GameState::print_board() const
     }
     std::cout << "There are " << num_tubes << " tubes\n\n";
 }
+
+
 

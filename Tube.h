@@ -23,6 +23,9 @@ public:
     bool pour(Tube &target);
     bool is_valid_pour(Tube &target) const;
 
+    int get_top_color_depth() const {return top_color_depth;}
+    bool is_empty() const {return empty;}
+
 private:
     std::vector<std::string> values;
     std::string name;
@@ -31,11 +34,11 @@ private:
     int free_spaces;
     int top_color_depth;
 
-    bool is_valid() const;
-    bool is_empty() const;
+    bool calculate_is_valid() const;
+    bool calculate_is_empty() const;
     int calculate_free_spaces() const;
     int calculate_top_color_depth() const;
-    std::string get_top_color() const;
+    std::string calculate_top_color() const;
 };
 
 #endif //WATERSORT_TUBE_H
