@@ -13,13 +13,11 @@ class GameState
 {
 public:
     GameState() : num_tubes(0) {}
-    GameState(std::vector<Tube> tubes) : board(std::move(tubes)), num_tubes(board.size()) {}
+    explicit GameState(std::vector<Tube> tubes) : board(std::move(tubes)), num_tubes(board.size()) {}
 
     void add_tube(const Tube &tube);
     void init_board();
     void print_board() const;
-
-    int get_num_tubes() {return num_tubes;}
 
     std::vector<Tube> board;
 
