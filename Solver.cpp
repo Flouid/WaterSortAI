@@ -108,11 +108,7 @@ bool Node::populate_children()
             }
         }
     }
-    // ensure there wasn't an error. Halt program execution if there was.
-    if (children.size() != num_valid_pours) {
-        std::cout << "Critical Error! Number of children mismatch number of valid moves\n";
-        assert(children.size() == num_valid_pours);
-    }
+    // there are no solutions possible from this board state
     return false;
 }
 
