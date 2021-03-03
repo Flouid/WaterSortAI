@@ -7,11 +7,7 @@
 void solve_state(const GameState &state)
 {
     Solver solver(state);
-    if(solver.populate_tree()) {
-        std::cout << "Solution found\n";
-    }
-    else
-        std::cout << "Solution not found\n";
+    solver.run();
 }
 
 GameState l1()

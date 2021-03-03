@@ -40,11 +40,12 @@ class Solver
 public:
     explicit Solver(const GameState &gameState) : root(new Node(gameState)) {}
 
-    bool populate_tree() const;
+    void run();
 
-    void find_solution(Node *node, std::vector<std::string> &path);
-
+private:
     Node* root;
+
+    bool find_solution(Node *node, std::vector<Node*> &path);
 };
 
 

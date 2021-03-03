@@ -90,11 +90,9 @@ bool Node::populate_children()
                 node->complete = node->is_game_complete();
                 node->num_valid_pours = node->get_num_valid_pours();
                 node->depth++;
-                node->move_description = "Poured Tube " + std::to_string(i) + " into Tube " + std::to_string(j) + ".";
+                node->move_description = std::to_string(i + 1) + " -> " + std::to_string(j + 1);
                 // insert it into the children
                 children.push_back(node);
-
-                node->print_state();
 
                 // if a complete board state is found, no need to calculate more children.
                 if (node->complete) {
@@ -118,29 +116,6 @@ bool Node::populate_children()
     return false;
 }
 
-bool Solver::populate_tree() const
-{
-    root->print_state();
-
-    bool return_value = root->populate_children();
-
-    return return_value;
-}
-
-/**
- * Perform a postorder depth-first search of the solution tree.
- * Along the way, keep track of the moves required to reach the solution.
- * Perform it in postorder since the tree is populated left->right,
- * meaning the solution should be all the way to the right.
- *
- * @param node pointing to the subtree to search
- * @param path vector of strings representing the path taken
- */
-void Solver::find_solution(Node *node, std::vector<std::string> &path)
-{
-
-}
-
 /**
  * Prints the entire state of the node.
  */
@@ -150,3 +125,56 @@ void Node::print_state() const
     printf("Game complete = %d,\tValid moves = %d,\tDepth = %d\n", complete, num_valid_pours, depth);
     state.print_board();
 }
+
+/**
+ * Perform a postorder depth-first search of the solution tree.
+ * Along the way, keep track of the moves required to reach the solution.
+ * Perform it in postorder since the tree is populated left->right,
+ * meaning the solution should be all the way to the right.
+ *
+ * @param node pointing to the subtree to search
+ * @param path vector of nodes representing the path taken
+ * @return bool representing whether bool was found in the searched subtree
+ */
+bool Solver::find_solution(Node *node, std::vector<Node*> &path)
+{
+    // If the node empty, stop here
+    if (node == nullptr)
+        return false;
+    // since the node is a candidate for the correct path, add it
+    path.push_back(node);
+    // if the given node is a complete board state, solution found and return
+    if (node->complete)
+        return true;
+    // if any of the node's children is a complete board state, return true
+    // search the children from right to left, as the solution should be the rightmost path in the tree
+    for (unsigned long i = node->children.size() - 1; i >= 0; --i) {
+        if (find_solution(node->children[i], path)) {
+            return true;
+        }
+    }
+    // if the solution was not found in any of the children, the node is not part of the path
+    path.pop_back();
+    return false;
+}
+
+/**
+ * Wrapper function to populate the tree, find the solution, and print the path to the solution found.
+ */
+void Solver::run()
+{
+    // populate the tree
+    if (!root->populate_children())
+        std::cout << "There was an error, no solution found\n";
+
+    // find the path to the solution
+    std::vector<Node*> path;
+    if (!find_solution(root, path))
+        std::cout << "There was an error, could not find path to solution\n";
+
+    // print the path to the solution
+    for (int i = 0; i < path.size(); ++i) {
+        printf("[%d]:\t%s\n", i, path[i]->move_description.c_str());
+    }
+}
+
