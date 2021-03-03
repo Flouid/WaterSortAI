@@ -103,13 +103,13 @@ bool Node::populate_children()
                 if (node->complete) {
                     return true;
                 }
-                // if no complete board state was found, populate the children of the new node.
-                else {
-                    if (node->populate_children()) {
-                        return true;
-                    }
+                // if the node can not proceed, this branch is done.
+                else if (node->num_valid_pours == 0) {
+                    return false;
                 }
-
+                else if (node->populate_children()) {
+                    return true;
+                }
             }
         }
     }
