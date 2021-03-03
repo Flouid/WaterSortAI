@@ -19,6 +19,7 @@ std::ostream & operator<<(std::ostream &out, const Tube &t)
         std::cout << "\t\t" << value << std::endl;
     }
     std::cout << std::endl;
+
     return out;
 }
 
@@ -34,11 +35,17 @@ std::istream & operator>>(std::istream &in, Tube &t)
 {
     std::vector<std::string> values;
     std::string value;
+
+    // read four color values
     for (int i = 0; i < 4; ++i) {
         in >> value;
+        // the logic requires that empty slots be explicitly marked "empty", but "e" should be a valid input
+        if (value == "e")
+            value = "empty";
         values.push_back(value);
     }
 
+    // set data for the tube
     t.values = values;
     t.name = "Tube";
     t.top_color = t.calculate_top_color();
