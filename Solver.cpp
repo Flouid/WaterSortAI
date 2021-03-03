@@ -128,6 +128,20 @@ bool Solver::populate_tree() const
 }
 
 /**
+ * Perform a postorder depth-first search of the solution tree.
+ * Along the way, keep track of the moves required to reach the solution.
+ * Perform it in postorder since the tree is populated left->right,
+ * meaning the solution should be all the way to the right.
+ *
+ * @param node pointing to the subtree to search
+ * @param path vector of strings representing the path taken
+ */
+void Solver::find_solution(Node *node, std::vector<std::string> &path)
+{
+
+}
+
+/**
  * Prints the entire state of the node.
  */
 void Node::print_state() const

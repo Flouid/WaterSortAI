@@ -42,7 +42,6 @@ public:
 
     bool populate_tree() const;
 
-
     void find_solution(Node *node, std::vector<std::string> &path);
 
     Node* root;
