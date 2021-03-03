@@ -5,6 +5,51 @@
 #include "Tube.h"
 
 /**
+ * Output operator for a tube, makes it easy to do i/o with them
+ *
+ * @param out output stream
+ * @param t tube to output
+ * @return output stream
+ */
+std::ostream & operator<<(std::ostream &out, const Tube &t)
+{
+    printf("\t%s\tFree Spaces = %d,\tTop Color Depth = %d,\tTop Color = %s,\tIs Empty = %d\n",
+           t.name.c_str(), t.free_spaces, t.top_color_depth, t.top_color.c_str(), t.empty);
+    for(const std::string &value: t.values) {
+        std::cout << "\t\t" << value << std::endl;
+    }
+    std::cout << std::endl;
+    return out;
+}
+
+/**
+ * Input operator for a tube, makes it easy to do i/o with them.
+ * Assumes tubes are formatted as four values separated by whitespace.
+ *
+ * @param in input stream
+ * @param t tube to read into
+ * @return input stream
+ */
+std::istream & operator>>(std::istream &in, Tube &t)
+{
+    std::vector<std::string> values;
+    std::string value;
+    for (int i = 0; i < 4; ++i) {
+        in >> value;
+        values.push_back(value);
+    }
+
+    t.values = values;
+    t.name = "Tube";
+    t.top_color = t.calculate_top_color();
+    t.empty = t.calculate_is_empty();
+    t.free_spaces = t.calculate_free_spaces();
+    t.top_color_depth = t.calculate_top_color_depth();
+
+    return in;
+}
+
+/**
  * Detailed constructor for initializing a tube.
  *
  * @param tube_name
@@ -130,19 +175,6 @@ std::string Tube::calculate_top_color() const
         top = "empty";
     }
     return top;
-}
-
-/**
- * Prints all of the data associated with a tube to the console.
- */
-void Tube::print_tube() const
-{
-    printf("\t%s\tFree Spaces = %d,\tTop Color Depth = %d,\tTop Color = %s,\tIs Empty = %d\n",
-            name.c_str(), free_spaces, top_color_depth, top_color.c_str(), empty);
-    for(const std::string &value: values) {
-        std::cout << "\t\t" << value << std::endl;
-    }
-    std::cout << std::endl;
 }
 
 /**

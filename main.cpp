@@ -1,17 +1,23 @@
+#include <fstream>
 #include "levels.h"
 
 using namespace std;
 
-void invalid_tube_init()
+GameState ingest_text_file(const string &filename)
 {
-    Tube t1("Tube 1", {"green", "blue", "black", "empty"});
-    GameState board;
-    board.add_tube(t1);
-    board.print_board();
+    ifstream file;
+    file.open(filename);
+
+    return GameState();
 }
 
 int main()
 {
-    GameState state = l107();
-    solve_state(state);
+    string filename;
+
+    cout << "Enter the name of an input file: ";
+    cin >> filename;
+    cin.ignore(); // the \n character
+
+    GameState state = ingest_text_file(filename);
 }

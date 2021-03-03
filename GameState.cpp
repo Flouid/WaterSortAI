@@ -45,7 +45,7 @@ void GameState::print_board() const
 {
     printf("Board State:\tNumber of Tubes = %d\n", num_tubes);
     for(const Tube &tube: board) {
-        tube.print_tube();
+        std::cout << tube;
     }
     std::cout << std::endl;
 }
