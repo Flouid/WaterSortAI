@@ -18,8 +18,8 @@ public:
     explicit Node(const GameState &gameState) : Node(gameState, "Initialization", 0) {}
     Node(const GameState &gameState, std::string move, int dep);
 
-    int get_num_valid_pours();
-    bool is_game_complete() const;
+    int calculate_num_valid_pours();
+    bool calculate_is_game_complete() const;
     void print_state() const;
 
     bool populate_children();
@@ -28,7 +28,6 @@ public:
     std::vector<Node*> children;
     std::string move_description;
     int depth;
-
     int num_valid_pours;
     bool complete;
 };

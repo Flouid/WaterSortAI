@@ -20,8 +20,8 @@ Node::Node(const GameState& gameState, std::string move, int dep)
     move_description = std::move(move);
     depth = dep;
 
-    num_valid_pours = get_num_valid_pours();
-    complete = is_game_complete();
+    num_valid_pours = calculate_num_valid_pours();
+    complete = calculate_is_game_complete();
 }
 
 /**
@@ -29,7 +29,7 @@ Node::Node(const GameState& gameState, std::string move, int dep)
  *
  * @return int representing total number of valid pours
  */
-int Node::get_num_valid_pours()
+int Node::calculate_num_valid_pours()
 {
     int valid_pours = 0;
     // iterate through every source tube
@@ -51,7 +51,7 @@ int Node::get_num_valid_pours()
  *
  * @return bool representing whether or not the game is complete
  */
-bool Node::is_game_complete() const
+bool Node::calculate_is_game_complete() const
 {
     int num_solved_tubes = 0;
     // iterate through every tube
@@ -87,8 +87,8 @@ bool Node::populate_children()
                 // perform the pour on the copy
                 node->state.board[i].pour(node->state.board[j]);
                 // recalculate values related to the state of the node
-                node->complete = node->is_game_complete();
-                node->num_valid_pours = node->get_num_valid_pours();
+                node->complete = node->calculate_is_game_complete();
+                node->num_valid_pours = node->calculate_num_valid_pours();
                 node->depth++;
                 node->move_description = std::to_string(i + 1) + " -> " + std::to_string(j + 1);
                 // insert it into the children
@@ -114,6 +114,7 @@ bool Node::populate_children()
 
 /**
  * Prints the entire state of the node.
+ * Exists primarily for debugging reasons.
  */
 void Node::print_state() const
 {
