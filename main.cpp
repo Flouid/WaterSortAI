@@ -1,5 +1,7 @@
 #include <fstream>
-#include "levels.h"
+
+#include "GameState.h"
+#include "Solver.h"
 
 using namespace std;
 
