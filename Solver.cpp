@@ -67,10 +67,11 @@ bool Node::calculate_is_game_complete() const
  * Populates all of the children of a node.
  * For each valid move possible, copies the gamestate to a new child node and performs that move.
  * If a move results in a completed board state, stop and return true. Otherwise, return false.
+ * Performs this in a depth first manner.
  *
  * @return bool representing whether or not a child node was found.
  */
-bool Node::populate_children()
+bool Node::df_populate_children()
 {
     Node *node;
     // iterate through every source tube
@@ -94,7 +95,7 @@ bool Node::populate_children()
                 // insert it into the children
                 children.push_back(node);
 
-                // if a complete board state is found, no need to calculate more children.
+                // if a complete board state is found, no need to find more children.
                 if (node->complete) {
                     return true;
                 }
@@ -102,12 +103,69 @@ bool Node::populate_children()
                 else if (node->num_valid_pours == 0) {
                     return false;
                 }
-                else if (node->populate_children()) {
+                else if (node->df_populate_children()) {
                     return true;
                 }
             }
         }
     }
+    // there are no solutions possible from this board state
+    return false;
+}
+
+/**
+ *
+ * Populates all of the children of a node.
+ * For each valid move possible, copies the gamestate to a new child node and performs that move.
+ * If a move results in a completed board state, stop and return true. Otherwise, return false.
+ * Performs this in a breadth first manner so as to find the shortest possible solution.
+ *
+ * @return bool representing whether or not a child node was found.
+ */
+bool Node::bf_populate_children()
+{
+    Node *node;
+    // populate all of the children of the current node...
+    // iterate through every source tube
+    for (int i = 0; i < state.get_num_tubes(); ++i) {
+        // iterate through every target tube
+        for (int j = 0; j < state.get_num_tubes(); ++j) {
+            // don't attempt to pour into itself
+            if (i == j)
+                continue;
+            // if there is a valid pour...
+            if (state.board[i].is_valid_pour(state.board[j])) {
+                // create a copy of the board state
+                node = new Node(*this);
+                // perform the pour on the copy
+                node->state.board[i].pour(node->state.board[j]);
+                // recalculate values related to the state of the node
+                node->complete = node->calculate_is_game_complete();
+                node->num_valid_pours = node->calculate_num_valid_pours();
+                node->depth++;
+                node->move_description = std::to_string(i + 1) + " -> " + std::to_string(j + 1);
+                // insert it into the children
+                children.push_back(node);
+
+                // if a complete board state is found, no need to find more children.
+                if (node->complete) {
+                    return true;
+                }
+                // if the node can not proceed, this branch is done.
+                else if (node->num_valid_pours == 0) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    // populate all of the children of each child node, return true if any of them find a solution
+    for (Node *child: children) {
+        if (child->bf_populate_children()) {
+            return true;
+        }
+    }
+
     // there are no solutions possible from this board state
     return false;
 }
@@ -158,15 +216,22 @@ bool Solver::find_solution(Node *node, std::vector<Node*> &path)
 /**
  * Wrapper function to populate the tree, find the solution, and print the path to the solution found.
  */
-void Solver::run()
+void Solver::run(bool deep_solve)
 {
     // time tracking done within this function, locally use this namespace for readability
     using namespace std::chrono;
 
     // populate the tree and measure how long it takes.
     auto start_pop = high_resolution_clock::now();
-    if (!root->populate_children())
-        std::cout << "There was an error, no solution found\n";
+    // if the user chooses to perform a deep solve, it calculates breadth first for the shortest possible solution
+    if (deep_solve) {
+        if (!root->bf_populate_children())
+            std::cout << "There was an error, no solution found\n";
+    }
+    else {
+        if (!root->df_populate_children())
+            std::cout << "There was an error, no solution found\n";
+    }
     auto stop_pop = high_resolution_clock::now();
     auto duration_to_populate_tree = duration_cast<microseconds>(stop_pop - start_pop);
 
