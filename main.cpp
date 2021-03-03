@@ -12,6 +12,6 @@ void invalid_tube_init()
 
 int main()
 {
-    GameState state = l10();
+    GameState state = l107();
     solve_state(state);
 }

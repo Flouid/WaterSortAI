@@ -120,3 +120,22 @@ GameState l10()
     state.init_board();
     return state;
 }
+
+GameState l107()
+{
+    GameState state(
+            {Tube({"lime", "black", "orange", "yellow"}),
+             Tube({"red", "purple" ,"green", "cyan"}),
+             Tube({"green", "pink", "lime", "purple"}),
+             Tube({"yellow", "pink", "red", "brown"}),
+             Tube({"green", "dark blue", "brown", "purple"}),
+             Tube({"green", "black", "purple", "yellow"}),
+             Tube({"orange", "black", "cyan", "dark green"}),
+             Tube({"red", "dark green", "cyan", "pink"}),
+             Tube({"dark blue", "dark blue", "cyan", "lime"}),
+             Tube({"dark green", "brown", "pink", "orange"}),
+             Tube({"black", "lime", "yellow", "orange"}),
+             Tube({"red", "brown", "dark green", "dark blue"})});
+    state.init_board();
+    return state;
+}

@@ -163,18 +163,29 @@ bool Solver::find_solution(Node *node, std::vector<Node*> &path)
  */
 void Solver::run()
 {
-    // populate the tree
+    // time tracking done within this function, locally use this namespace for readability
+    using namespace std::chrono;
+
+    // populate the tree and measure how long it takes.
+    auto start_pop = high_resolution_clock::now();
     if (!root->populate_children())
         std::cout << "There was an error, no solution found\n";
+    auto stop_pop = high_resolution_clock::now();
+    auto duration_to_populate_tree = duration_cast<microseconds>(stop_pop - start_pop);
 
     // find the path to the solution
+    auto start_find = high_resolution_clock::now();
     std::vector<Node*> path;
     if (!find_solution(root, path))
         std::cout << "There was an error, could not find path to solution\n";
+    auto stop_find = high_resolution_clock::now();
+    auto duration_to_find_solution = duration_cast<microseconds>(stop_find - start_find);
 
     // print the path to the solution
     for (int i = 0; i < path.size(); ++i) {
         printf("[%d]:\t%s\n", i, path[i]->move_description.c_str());
     }
+    printf("\nTime required to populate the solution tree:\t%lld microseconds\n", duration_to_populate_tree.count());
+    printf("Time required to find the solution in the tree:\t%lld microseconds\n", duration_to_find_solution.count());
 }
 
