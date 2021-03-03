@@ -6,13 +6,8 @@
 
 void solve_state(const GameState &state)
 {
-    std::vector<std::string> moves;
     Solver solver(state);
-    if(solver.populate_tree(moves)) {
-        for (const std::string &move: moves) {
-            std::cout << move;
-            std::cin.get();
-        }
+    if(solver.populate_tree()) {
         std::cout << "Solution found\n";
     }
     else

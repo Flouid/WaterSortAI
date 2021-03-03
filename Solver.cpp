@@ -71,7 +71,7 @@ bool Node::is_game_complete() const
  *
  * @return bool representing whether or not a child node was found.
  */
-bool Node::populate_children(std::vector<std::string> &moves)
+bool Node::populate_children()
 {
     Node *node;
     // iterate through every source tube
@@ -97,7 +97,6 @@ bool Node::populate_children(std::vector<std::string> &moves)
                 // insert it into the children
                 children.push_back(node);
 
-                moves.push_back(node->move_description);
                 node->print_state();
 
                 // if a complete board state is found, no need to calculate more children.
@@ -106,8 +105,11 @@ bool Node::populate_children(std::vector<std::string> &moves)
                 }
                 // if no complete board state was found, populate the children of the new node.
                 else {
-                    return node->populate_children(moves);
+                    if (node->populate_children()) {
+                        return true;
+                    }
                 }
+
             }
         }
     }
@@ -119,11 +121,11 @@ bool Node::populate_children(std::vector<std::string> &moves)
     return false;
 }
 
-bool Solver::populate_tree(std::vector<std::string> &moves) const
+bool Solver::populate_tree() const
 {
     root->print_state();
 
-    bool return_value = root->populate_children(moves);
+    bool return_value = root->populate_children();
 
     return return_value;
 }

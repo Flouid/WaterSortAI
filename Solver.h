@@ -21,7 +21,7 @@ public:
     bool is_game_complete() const;
     void print_state() const;
 
-    bool populate_children(std::vector<std::string> &moves);
+    bool populate_children();
 
     GameState state;
     Node* parent;
@@ -41,7 +41,7 @@ class Solver
 public:
     explicit Solver(const GameState &gameState) : root(new Node(gameState)) {}
 
-    bool populate_tree(std::vector<std::string> &moves) const;
+    bool populate_tree() const;
 
     Node* root;
 };
