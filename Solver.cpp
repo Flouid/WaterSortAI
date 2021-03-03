@@ -14,10 +14,9 @@
  * @param move string representing the move required to get to this state from the parent
  * @param dep integer representing the depth of the current node
  */
-Node::Node(const GameState& gameState, Node* par, std::string move, int dep)
+Node::Node(const GameState& gameState, std::string move, int dep)
 {
     state = gameState;
-    parent = par;
     move_description = std::move(move);
     depth = dep;
 
@@ -92,8 +91,6 @@ bool Node::populate_children()
                 node->num_valid_pours = node->get_num_valid_pours();
                 node->depth++;
                 node->move_description = "Poured Tube " + std::to_string(i) + " into Tube " + std::to_string(j) + ".";
-                // link it to the parent (this node)
-                node->parent = this;
                 // insert it into the children
                 children.push_back(node);
 
@@ -113,7 +110,7 @@ bool Node::populate_children()
             }
         }
     }
-    // ensure there wasn't an error. Stop program execution if there was.
+    // ensure there wasn't an error. Halt program execution if there was.
     if (children.size() != num_valid_pours) {
         std::cout << "Critical Error! Number of children mismatch number of valid moves\n";
         assert(children.size() == num_valid_pours);
