@@ -231,3 +231,39 @@ void Solver::run()
     printf("Time required to find the solution in the tree:\t%lld microseconds\n", duration_to_find_solution.count());
     printf("The generated tree had %d nodes\n", count_nodes());
 }
+
+void Solver::time_test(int repetitions)
+{
+    using namespace std::chrono;
+
+    double total_population_duration = 0;
+    double total_find_duration = 0;
+
+    // populate the tree several times to measure the average runtime
+    for (int i = 0; i < repetitions; ++i) {
+        // if this isn't the first loop, the tree is already populated
+        if (!root->children.empty()) {
+            // reset the root node
+            root = std::shared_ptr<Node>(new Node(root->state));
+        }
+
+        // populate the tree and measure how long it takes.
+        auto start_pop = high_resolution_clock::now();
+        // if the user chooses to perform a deep solve, it calculates breadth first for the shortest possible solution
+        if (!root->populate_children())
+            std::cout << "There was an error, no solution found\n";
+        auto stop_pop = high_resolution_clock::now();
+        total_population_duration += duration_cast<microseconds>(stop_pop - start_pop).count();
+
+        // find the path to the solution
+        auto start_find = high_resolution_clock::now();
+        std::vector<std::shared_ptr<Node>> path;
+        if (!find_solution(root, path))
+            std::cout << "There was an error, could not find path to solution\n";
+        auto stop_find = high_resolution_clock::now();
+        total_find_duration += duration_cast<microseconds>(stop_find - start_find).count();
+    }
+
+    printf("It took on average %.0f microseconds to populate the tree.\n", total_population_duration/repetitions);
+    printf("It took on average %.0f microseconds to find the solution in the tree.\n", total_find_duration/repetitions);
+}

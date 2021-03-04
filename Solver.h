@@ -7,6 +7,7 @@
 
 #include <utility>
 #include <chrono>
+#include <ctime>
 
 #include "Tube.h"
 
@@ -40,6 +41,7 @@ public:
     explicit Solver(const std::vector<Tube> &state) : root(new Node(state)) {}
 
     void run();
+    void time_test(int repetitions = 25);
     int count_nodes() const;
     void print_tree() const;
 

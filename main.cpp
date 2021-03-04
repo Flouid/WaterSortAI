@@ -38,20 +38,47 @@ vector<Tube> ingest_text_file(const string &filename)
     return tubes;
 }
 
-void solve_from_text_file()
+/**
+ * Gets a filename from a user.
+ *
+ * @return string representing the file name
+ */
+string get_filename()
 {
     string filename;
 
     cout << "Enter the name of an input text file (w/o .txt): ";
     cin >> filename;
     cin.ignore(); // the \n character
+
+    return filename + ".txt";
+}
+
+/**
+ * Gets the testing mode from the user.
+ *
+ * @return boolean representing whether or not testing mode is on.
+ */
+bool get_mode()
+{
+    char response;
+
+    cout << "Run in performance testing mode? (y/n): ";
+    cin >> response;
+    cin.ignore(); // the \n character
     cout << endl;
 
-    Solver solver(ingest_text_file(filename + ".txt"));
-    solver.run();
+    if (response == 'y')
+        return true;
+    else
+        return false;
 }
 
 int main()
 {
-    solve_from_text_file();
+    Solver solver(ingest_text_file(get_filename()));
+    if (get_mode())
+        solver.time_test();
+    else
+        solver.run();
 }
