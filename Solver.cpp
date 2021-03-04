@@ -68,7 +68,7 @@ bool Node::calculate_is_game_complete() const
  * Populates all of the children of a node.
  * For each valid move possible, copies the gamestate to a new child node and performs that move.
  * If a move results in a completed board state, stop and return true. Otherwise, return false.
- * Performs this in a depth first manner.
+ * Performs this in a preorder-depth first manner.
  *
  * @return bool representing whether or not a child node was found.
  */
