@@ -20,10 +20,7 @@ public:
     explicit GameState(std::vector<Tube> tubes) : board(std::move(tubes)), num_tubes(board.size()) {}
     GameState(const GameState &state);
 
-    void add_tube(const Tube &tube);
-    void init_board();
     void print_board() const;
-
     int get_num_tubes() const {return num_tubes;}
 
     std::vector<Tube> board;

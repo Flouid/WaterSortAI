@@ -90,7 +90,7 @@ bool Node::df_populate_children()
                 // recalculate values related to the state of the node
                 node->complete = node->calculate_is_game_complete();
                 node->num_valid_pours = node->calculate_num_valid_pours();
-                node->depth++;
+                node->depth = depth + 1;
                 node->move_description = std::to_string(i + 1) + " -> " + std::to_string(j + 1);
                 // insert it into the children
                 children.push_back(node);
@@ -142,10 +142,12 @@ bool Node::bf_populate_children()
                 // recalculate values related to the state of the node
                 node->complete = node->calculate_is_game_complete();
                 node->num_valid_pours = node->calculate_num_valid_pours();
-                node->depth++;
+                node->depth = depth + 1;
                 node->move_description = std::to_string(i + 1) + " -> " + std::to_string(j + 1);
                 // insert it into the children
                 children.push_back(node);
+
+                node->print_state();
 
                 // if a complete board state is found, no need to find more children.
                 if (node->complete) {
@@ -182,16 +184,15 @@ void Node::print_state() const
 }
 
 /**
- * Perform a postorder depth-first search of the solution tree.
+ * Perform a depth-first search of the solution tree.
  * Along the way, keep track of the moves required to reach the solution.
- * Perform it in postorder since the tree is populated left->right,
- * meaning the solution should be all the way to the right.
+ * Since the tree is populated left->right, search the rightmost branches first as that's where the solution should be.
  *
  * @param node pointing to the subtree to search
  * @param path vector of nodes representing the path taken
  * @return bool representing whether bool was found in the searched subtree
  */
-bool Solver::find_solution(Node *node, std::vector<Node*> &path)
+bool Solver::df_find_solution(Node *node, std::vector<Node*> &path)
 {
     // If the node empty, stop here
     if (node == nullptr)
@@ -204,13 +205,73 @@ bool Solver::find_solution(Node *node, std::vector<Node*> &path)
     // if any of the node's children is a complete board state, return true
     // search the children from right to left, as the solution should be the rightmost path in the tree
     for (unsigned long i = node->children.size() - 1; i >= 0; --i) {
-        if (find_solution(node->children[i], path)) {
+        if (df_find_solution(node->children[i], path)) {
             return true;
         }
     }
     // if the solution was not found in any of the children, the node is not part of the path
     path.pop_back();
     return false;
+}
+
+/**
+ * Perform a breadth-first search of the solution tree.
+ * Along the way, keep track of the moves required to reach the solution.
+ *
+ * TODO: Make breadth-first
+ *
+ * @param node pointing to the subtree to search
+ * @param path vector of nodes representing the path taken
+ * @return bool representing whether bool was found in the searched subtree
+ */
+bool Solver::bf_find_solution(Node *node, std::vector<Node*> &path)
+{
+    // If the node empty, stop here
+    if (node == nullptr)
+        return false;
+    // since the node is a candidate for the correct path, add it
+    path.push_back(node);
+    // if the given node is a complete board state, solution found and return
+    if (node->complete)
+        return true;
+    // if any of the node's children is a complete board state, return true
+    // search the children from right to left, as the solution should be the rightmost path in the tree
+    for (unsigned long i = node->children.size() - 1; i >= 0; --i) {
+        if (df_find_solution(node->children[i], path)) {
+            return true;
+        }
+    }
+    // if the solution was not found in any of the children, the node is not part of the path
+    path.pop_back();
+    return false;
+}
+
+/**
+ * Traverse the tree and count how many nodes it contains.
+ *
+ * @param node pointer to the subtree that should be counted
+ * @param n integer storing the number of nodes
+ */
+void Solver::count_nodes(const Node *node, int &n) const
+{
+    if (node == nullptr)
+        return;
+    for (const Node *child : node->children) {
+        count_nodes(child, n);
+    }
+    ++n;
+}
+
+/**
+ * Public wrapper function to provide users of Solver to count the number of nodes in the tree.
+ *
+ * @return
+ */
+int Solver::count_nodes() const
+{
+    int n = 0;
+    count_nodes(root, n);
+    return n;
 }
 
 /**
@@ -238,8 +299,14 @@ void Solver::run(bool deep_solve)
     // find the path to the solution
     auto start_find = high_resolution_clock::now();
     std::vector<Node*> path;
-    if (!find_solution(root, path))
-        std::cout << "There was an error, could not find path to solution\n";
+    if (deep_solve) {
+        if (!bf_find_solution(root, path))
+            std::cout << "There was an error, could not find path to solution\n";
+    }
+    else {
+        if (!df_find_solution(root, path))
+            std::cout << "There was an error, could not find path to solution\n";
+    }
     auto stop_find = high_resolution_clock::now();
     auto duration_to_find_solution = duration_cast<microseconds>(stop_find - start_find);
 
@@ -250,4 +317,3 @@ void Solver::run(bool deep_solve)
     printf("\nTime required to populate the solution tree:\t%lld microseconds\n", duration_to_populate_tree.count());
     printf("Time required to find the solution in the tree:\t%lld microseconds\n", duration_to_find_solution.count());
 }
-

@@ -42,15 +42,14 @@ public:
     explicit Solver(const GameState &gameState) : root(new Node(gameState)) {}
 
     void run(bool deep_solve);
+    int count_nodes() const;
 
 private:
     Node* root;
 
-    bool find_solution(Node *node, std::vector<Node*> &path);
+    bool df_find_solution(Node *node, std::vector<Node*> &path);
+    bool bf_find_solution(Node *node, std::vector<Node*> &path);
+    void count_nodes(const Node *node, int &n) const;
 };
-
-
-
-
 
 #endif //WATERSORT_SOLVER_H

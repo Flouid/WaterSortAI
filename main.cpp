@@ -33,7 +33,7 @@ GameState ingest_text_file(const string &filename)
     return GameState(tubes);
 }
 
-int main()
+void solve_from_text_file()
 {
     string filename;
     char deep_solve;
@@ -54,4 +54,10 @@ int main()
         solver.run(true);
     else
         solver.run(false);
+    cout << "The generated tree had " << solver.count_nodes() << " nodes\n";
+}
+
+int main()
+{
+    solve_from_text_file();
 }
