@@ -165,16 +165,16 @@ void Solver::count_nodes(const Node *node, int &n) const
 {
     if (node == nullptr)
         return;
+    ++n;
     for (const Node *child : node->children) {
         count_nodes(child, n);
     }
-    ++n;
 }
 
 /**
  * Public wrapper function to provide users of Solver to count the number of nodes in the tree.
  *
- * @return
+ * @return integer representing the number of nodes found
  */
 int Solver::count_nodes() const
 {
