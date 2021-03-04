@@ -54,5 +54,4 @@ void solve_from_text_file()
 int main()
 {
     solve_from_text_file();
-
 }
