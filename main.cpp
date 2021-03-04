@@ -46,6 +46,9 @@ void solve_from_text_file()
 
     Solver solver(ingest_text_file(filename + ".txt"));
     solver.run();
+
+    solver.print_tree();
+
     cout << "The generated tree had " << solver.count_nodes() << " nodes\n";
 }
 

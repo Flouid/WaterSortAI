@@ -42,12 +42,14 @@ public:
 
     void run();
     int count_nodes() const;
+    void print_tree() const;
 
 private:
     Node* root;
 
     bool find_solution(Node *node, std::vector<Node*> &path);
     void count_nodes(const Node *node, int &n) const;
+    void print_tree(const Node *node) const;
 };
 
 #endif //WATERSORT_SOLVER_H

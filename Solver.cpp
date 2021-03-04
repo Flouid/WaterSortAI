@@ -109,6 +109,10 @@ bool Node::populate_children()
             }
         }
     }
+    if (num_valid_pours != children.size()) {
+        std::cout << "Critical Error: Mismatch between number of valid pours and number of children\n";
+        exit(1);
+    }
     // there are no solutions possible from this board state
     return false;
 }
@@ -181,6 +185,39 @@ int Solver::count_nodes() const
     int n = 0;
     count_nodes(root, n);
     return n;
+}
+
+/**
+ * Goes through each tree and prints it's move and valid number of moves.
+ *
+ * @param node pointer to subtree to print.
+ */
+void Solver::print_tree(const Node *node) const
+{
+    // special cases for null pointer
+    if (node == nullptr)
+        return;
+    // space nodes to the right based on how deep they are
+    for (int i = 0; i < node->depth; ++i) {
+        printf("  ");
+    }
+    // print statement
+    if (node == root) {
+        printf("Initial Valid Moves = %d\n", root->num_valid_pours);
+    }
+    else {
+        printf("%s:  %d\n", node->move_description.c_str(), node->num_valid_pours);
+    }
+    // recursive calls
+    for(const Node *child : node->children) {
+        print_tree(child);
+    }
+}
+
+void Solver::print_tree() const
+{
+    std::cout << std::endl;
+    print_tree(root);
 }
 
 /**
