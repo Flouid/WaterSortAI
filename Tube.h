@@ -18,10 +18,8 @@ public:
     friend std::ostream & operator<<(std::ostream &out, const Tube &t);
     friend std::istream & operator>>(std::istream &in, Tube &t);
 
-    Tube() : Tube("Tube") {}
-    explicit Tube(std::string tube_name) : Tube(std::move(tube_name),{"empty", "empty", "empty", "empty"}) {}
-    explicit Tube(std::vector<std::string> tube_values) : Tube("Tube", std::move(tube_values)) {}
-    Tube(std::string tube_name, std::vector<std::string> tube_values);
+    Tube() : Tube({"empty", "empty", "empty", "empty"}) {}
+    explicit Tube(std::vector<std::string> tube_values);
 
     bool pour(Tube &target);
     bool is_valid_pour(Tube &target) const;
@@ -31,7 +29,6 @@ public:
 
 private:
     std::vector<std::string> values;
-    std::string name;
     std::string top_color;
     bool empty;
     int free_spaces;

@@ -3,4 +3,4 @@ project(WaterSort)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(WaterSort main.cpp GameState.h Tube.h Tube.cpp GameState.cpp Solver.h Solver.cpp)
+add_executable(WaterSort main.cpp Tube.h Tube.cpp Solver.h Solver.cpp)

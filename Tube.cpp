@@ -13,8 +13,8 @@
  */
 std::ostream & operator<<(std::ostream &out, const Tube &t)
 {
-    printf("\t%s\tFree Spaces = %d,\tTop Color Depth = %d,\tTop Color = %s,\tIs Empty = %d\n",
-           t.name.c_str(), t.free_spaces, t.top_color_depth, t.top_color.c_str(), t.empty);
+    printf("\tTube:\tFree Spaces = %d,\tTop Color Depth = %d,\tTop Color = %s,\tIs Empty = %d\n",
+           t.free_spaces, t.top_color_depth, t.top_color.c_str(), t.empty);
     for(const std::string &value: t.values) {
         std::cout << "\t\t" << value << std::endl;
     }
@@ -47,7 +47,6 @@ std::istream & operator>>(std::istream &in, Tube &t)
 
     // set data for the tube
     t.values = values;
-    t.name = "Tube";
     t.top_color = t.calculate_top_color();
     t.empty = t.calculate_is_empty();
     t.free_spaces = t.calculate_free_spaces();
@@ -62,7 +61,7 @@ std::istream & operator>>(std::istream &in, Tube &t)
  * @param tube_name
  * @param tube_values
  */
-Tube::Tube(std::string tube_name, std::vector<std::string> tube_values) : name(std::move(tube_name)), values(std::move(tube_values))
+Tube::Tube(std::vector<std::string> tube_values) : values(std::move(tube_values))
 {
     if (!calculate_is_valid()) {
         // if the tube isn't valid, exit immediately and notify the user.

@@ -8,23 +8,22 @@
 #include <utility>
 #include <chrono>
 
-#include "GameState.h"
+#include "Tube.h"
 
 /**
  * Class representing a node on a non-binary tree of all potential games
  */
 class Node {
 public:
-    explicit Node(const GameState &gameState) : Node(gameState, "Initialization", 0) {}
-    Node(const GameState &gameState, std::string move, int dep);
+    explicit Node(const std::vector<Tube> &tubes) : Node(tubes, "Initialization", 0) {}
+    Node(const std::vector<Tube> &tubes, std::string move, int dep);
 
     int calculate_num_valid_pours();
     bool calculate_is_game_complete() const;
-    void print_state() const;
 
     bool populate_children();
 
-    GameState state;
+    std::vector<Tube> state;
     std::vector<Node*> children;
     std::string move_description;
     int depth;
@@ -38,7 +37,7 @@ public:
 class Solver
 {
 public:
-    explicit Solver(const GameState &gameState) : root(new Node(gameState)) {}
+    explicit Solver(const std::vector<Tube> &state) : root(new Node(state)) {}
 
     void run();
     int count_nodes() const;

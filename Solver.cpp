@@ -14,7 +14,7 @@
  * @param move string representing the move required to get to this state from the parent
  * @param dep integer representing the depth of the current node
  */
-Node::Node(const GameState& gameState, std::string move, int dep)
+Node::Node(const std::vector<Tube> &gameState, std::string move, int dep)
 {
     state = gameState;
     move_description = std::move(move);
@@ -33,13 +33,13 @@ int Node::calculate_num_valid_pours()
 {
     int valid_pours = 0;
     // iterate through every source tube
-    for (int i = 0; i < state.get_num_tubes(); ++i) {
+    for (int i = 0; i < state.size(); ++i) {
         // iterate through every target tube
-        for (int j = 0; j < state.get_num_tubes(); ++j) {
+        for (int j = 0; j < state.size(); ++j) {
             // don't pour into itself
             if (i == j)
                 continue;
-            valid_pours += state.board[i].is_valid_pour(state.board[j]);
+            valid_pours += state[i].is_valid_pour(state[j]);
         }
     }
     return valid_pours;
@@ -55,12 +55,12 @@ bool Node::calculate_is_game_complete() const
 {
     int num_solved_tubes = 0;
     // iterate through every tube
-    for (const Tube &tube: state.board) {
+    for (const Tube &tube: state) {
         // if the tube is full of the same color or empty, it is solved
         if (tube.get_top_color_depth() == 4 || tube.is_empty())
             ++num_solved_tubes;
     }
-    return num_solved_tubes == state.get_num_tubes();
+    return num_solved_tubes == state.size();
 }
 
 /**
@@ -75,20 +75,20 @@ bool Node::populate_children()
 {
     Node *node;
     // iterate through every source tube
-    for (int i = 0; i < state.get_num_tubes(); ++i) {
+    for (int i = 0; i < state.size(); ++i) {
         // iterate through every target tube
-        for (int j = 0; j < state.get_num_tubes(); ++j) {
+        for (int j = 0; j < state.size(); ++j) {
             // don't attempt to pour into itself
             if (i == j)
                 continue;
             // if there is a valid pour...
-            if (state.board[i].is_valid_pour(state.board[j])) {
+            if (state[i].is_valid_pour(state[j])) {
                 // create a copy of the board state
                 node = new Node(*this);
                 // wipe any children
                 node->children.clear();
                 // perform the pour on the copy
-                node->state.board[i].pour(node->state.board[j]);
+                node->state[i].pour(node->state[j]);
                 // recalculate values related to the state of the node
                 node->complete = node->calculate_is_game_complete();
                 node->num_valid_pours = node->calculate_num_valid_pours();
@@ -109,17 +109,6 @@ bool Node::populate_children()
     }
     // there are no solutions possible from this board state
     return false;
-}
-
-/**
- * Prints the entire state of the node.
- * Exists primarily for debugging reasons.
- */
-void Node::print_state() const
-{
-    printf("Move to get here: %s\n", move_description.c_str());
-    printf("Game complete = %d,\tValid moves = %d,\tDepth = %d\n", complete, num_valid_pours, depth);
-    state.print_board();
 }
 
 /**

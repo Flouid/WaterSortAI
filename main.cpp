@@ -1,11 +1,10 @@
 #include <fstream>
 
-#include "GameState.h"
 #include "Solver.h"
 
 using namespace std;
 
-GameState ingest_text_file(const string &filename)
+vector<Tube> ingest_text_file(const string &filename)
 {
     ifstream in(filename);
     if (!in.is_open()) {
@@ -30,7 +29,7 @@ GameState ingest_text_file(const string &filename)
     }
 
     // create a gamestate from all of the tubes and return it.
-    return GameState(tubes);
+    return tubes;
 }
 
 void solve_from_text_file()
