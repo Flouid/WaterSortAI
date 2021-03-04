@@ -85,6 +85,8 @@ bool Node::populate_children()
             if (state.board[i].is_valid_pour(state.board[j])) {
                 // create a copy of the board state
                 node = new Node(*this);
+                // wipe any children
+                node->children.clear();
                 // perform the pour on the copy
                 node->state.board[i].pour(node->state.board[j]);
                 // recalculate values related to the state of the node
@@ -95,17 +97,9 @@ bool Node::populate_children()
                 // insert it into the children
                 children.push_back(node);
 
-                // if a complete board state is found, no need to find more children.
-                if (node->complete) {
+                // if a node is complete or any of its children are complete, we are done
+                if (node->complete || node->populate_children())
                     return true;
-                }
-                // if the node can not proceed, this branch is done.
-                else if (node->num_valid_pours == 0) {
-                    return false;
-                }
-                else if (node->populate_children()) {
-                    return true;
-                }
             }
         }
     }
