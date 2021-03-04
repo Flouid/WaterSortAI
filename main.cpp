@@ -4,6 +4,12 @@
 
 using namespace std;
 
+/**
+ * Ingests a text file into a vector of tubes that constitutes a game state
+ *
+ * @param filename string representing filename
+ * @return vector of tubes representing gamestate
+ */
 vector<Tube> ingest_text_file(const string &filename)
 {
     ifstream in(filename);

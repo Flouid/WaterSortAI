@@ -16,7 +16,7 @@
 class Node {
 public:
     explicit Node(const std::vector<Tube> &tubes) : Node(tubes, "Initialization", 0) {}
-    Node(const std::vector<Tube> &tubes, std::string move, int dep);
+    Node(const std::vector<Tube> &game_state, std::string move, int dep);
 
     int calculate_num_valid_pours();
     bool calculate_is_game_complete() const;

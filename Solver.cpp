@@ -9,14 +9,14 @@
  * Is given a game state, a pointer to its parent, the last move as a string, and the depth...
  * Determines the number of valid pours and whether or not the board is complete.
  *
- * @param gameState current state of the board
+ * @param game_state current state of the board
  * @param par pointer to the parent node
  * @param move string representing the move required to get to this state from the parent
  * @param dep integer representing the depth of the current node
  */
-Node::Node(const std::vector<Tube> &gameState, std::string move, int dep)
+Node::Node(const std::vector<Tube> &game_state, std::string move, int dep)
 {
-    state = gameState;
+    state = game_state;
     move_description = std::move(move);
     depth = dep;
 

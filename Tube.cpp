@@ -193,10 +193,6 @@ std::string Tube::calculate_top_color() const
  */
 bool Tube::pour(Tube &target)
 {
-    // if the pour isn't valid, stop here
-    if (!is_valid_pour(target))
-        return false;
-
     // find the index in the target tube of the deepest empty slot
     int deepest_empty_slot;
     // set the original pour color
@@ -226,7 +222,7 @@ bool Tube::pour(Tube &target)
             break;
         }
     }
-    // recalculate some data for the tube
+    // recalculate some data for both tubes
     empty = calculate_is_empty();
     target.empty = target.calculate_is_empty();
     top_color_depth = calculate_top_color_depth();
