@@ -20,7 +20,7 @@ Node::Node(const std::vector<Tube> &game_state, std::string move, int dep)
     move_description = std::move(move);
     depth = dep;
 
-    num_valid_pours = calculate_num_valid_pours();
+    valid_pours = calculate_valid_pours();
     complete = calculate_is_game_complete();
 }
 
@@ -29,9 +29,9 @@ Node::Node(const std::vector<Tube> &game_state, std::string move, int dep)
  *
  * @return int representing total number of valid pours
  */
-int Node::calculate_num_valid_pours()
+std::vector<std::tuple<int, int>> Node::calculate_valid_pours()
 {
-    int valid_pours = 0;
+    std::vector<std::tuple<int, int>> pours;
     // iterate through every source tube
     for (int i = 0; i < state.size(); ++i) {
         // iterate through every target tube
@@ -39,10 +39,11 @@ int Node::calculate_num_valid_pours()
             // don't pour into itself
             if (i == j)
                 continue;
-            valid_pours += state[i].is_valid_pour(state[j]);
+            if (state[i].is_valid_pour(state[j]))
+                pours.emplace_back(i, j);
         }
     }
-    return valid_pours;
+    return pours;
 }
 
 /**
@@ -73,33 +74,27 @@ bool Node::calculate_is_game_complete() const
  */
 bool Node::populate_children()
 {
-    // iterate through every source tube
-    for (int i = 0; i < state.size(); ++i) {
-        // iterate through every target tube
-        for (int j = 0; j < state.size(); ++j) {
-            // don't attempt to pour into itself
-            if (i == j)
-                continue;
-            // if there is a valid pour...
-            if (state[i].is_valid_pour(state[j])) {
-                // create a copy of the game state
-                std::vector<Tube> new_state = state;
-                // perform the pour on the copy
-                new_state[i].pour(new_state[j]);
-                // create a new node with the new game state
-                std::shared_ptr<Node> new_node(new Node(new_state,
-                                          std::to_string(i + 1) + " -> " + std::to_string(j + 1),
-                                          depth + 1));
-                // insert it into the children
-                children.push_back(new_node);
+    int i;
+    int j;
+    for (const std::tuple<int, int> &valid_pour : valid_pours) {
+        i = std::get<0>(valid_pour);
+        j = std::get<1>(valid_pour);
+        // create a copy of the game state
+        std::vector<Tube> new_state = state;
+        // perform the pour on the copy
+        new_state[i].pour(new_state[j]);
+        // create a new node with the new game state
+        std::shared_ptr<Node> new_node(new Node(new_state,
+                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1),
+                                                depth + 1));
+        // insert it into the children
+        children.push_back(new_node);
 
-                // if a node is complete or any of its children are complete, we are done
-                if (new_node->complete || new_node->populate_children())
-                    return true;
-            }
-        }
+        // if a node is complete or any of its children are complete, we are done
+        if (new_node->complete || new_node->populate_children())
+            return true;
     }
-    if (num_valid_pours != children.size()) {
+    if (valid_pours.size() != children.size()) {
         std::cout << "Critical Error: Mismatch between number of valid pours and number of children\n";
         exit(1);
     }
@@ -182,10 +177,10 @@ void Solver::print_tree(const std::shared_ptr<Node> &node) const
     }
     // print statement
     if (node == root) {
-        printf("Initial Valid Moves = %d\n", root->num_valid_pours);
+        printf("Initial Valid Moves = %lu\n", root->valid_pours.size());
     }
     else {
-        printf("%s:  %d\n", node->move_description.c_str(), node->num_valid_pours);
+        printf("%s:  %lu\n", node->move_description.c_str(), node->valid_pours.size());
     }
     // recursive calls
     for(const std::shared_ptr<Node> &child : node->children) {

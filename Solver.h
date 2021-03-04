@@ -18,16 +18,16 @@ public:
     explicit Node(const std::vector<Tube> &tubes) : Node(tubes, "Initialization", 0) {}
     Node(const std::vector<Tube> &game_state, std::string move, int dep);
 
-    int calculate_num_valid_pours();
+    std::vector<std::tuple<int, int>> calculate_valid_pours();
     bool calculate_is_game_complete() const;
 
     bool populate_children();
 
     std::vector<Tube> state;
     std::vector<std::shared_ptr<Node>> children;
+    std::vector<std::tuple<int, int>> valid_pours;
     std::string move_description;
     int depth;
-    int num_valid_pours;
     bool complete;
 };
 
