@@ -188,6 +188,9 @@ void Solver::print_tree(const std::shared_ptr<Node> &node) const
     }
 }
 
+/**
+ * Public wrapper function to print the contents of an entire tree.
+ */
 void Solver::print_tree() const
 {
     std::cout << std::endl;
@@ -232,6 +235,11 @@ void Solver::run()
     printf("The generated tree had %d nodes\n", count_nodes());
 }
 
+/**
+ * Wrapper function to perform average execution time test on a gamestate
+ *
+ * @param repetitions int representing the number of repetitions to average across
+ */
 void Solver::time_test(int repetitions)
 {
     using namespace std::chrono;
