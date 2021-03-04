@@ -22,8 +22,7 @@ public:
     bool calculate_is_game_complete() const;
     void print_state() const;
 
-    bool df_populate_children();
-    bool bf_populate_children();
+    bool populate_children();
 
     GameState state;
     std::vector<Node*> children;
@@ -41,14 +40,13 @@ class Solver
 public:
     explicit Solver(const GameState &gameState) : root(new Node(gameState)) {}
 
-    void run(bool deep_solve);
+    void run();
     int count_nodes() const;
 
 private:
     Node* root;
 
-    bool df_find_solution(Node *node, std::vector<Node*> &path);
-    bool bf_find_solution(Node *node, std::vector<Node*> &path);
+    bool find_solution(Node *node, std::vector<Node*> &path);
     void count_nodes(const Node *node, int &n) const;
 };
 

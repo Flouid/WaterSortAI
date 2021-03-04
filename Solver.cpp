@@ -71,7 +71,7 @@ bool Node::calculate_is_game_complete() const
  *
  * @return bool representing whether or not a child node was found.
  */
-bool Node::df_populate_children()
+bool Node::populate_children()
 {
     Node *node;
     // iterate through every source tube
@@ -103,71 +103,12 @@ bool Node::df_populate_children()
                 else if (node->num_valid_pours == 0) {
                     return false;
                 }
-                else if (node->df_populate_children()) {
+                else if (node->populate_children()) {
                     return true;
                 }
             }
         }
     }
-    // there are no solutions possible from this board state
-    return false;
-}
-
-/**
- *
- * Populates all of the children of a node.
- * For each valid move possible, copies the gamestate to a new child node and performs that move.
- * If a move results in a completed board state, stop and return true. Otherwise, return false.
- * Performs this in a breadth first manner so as to find the shortest possible solution.
- *
- * @return bool representing whether or not a child node was found.
- */
-bool Node::bf_populate_children()
-{
-    Node *node;
-    // populate all of the children of the current node...
-    // iterate through every source tube
-    for (int i = 0; i < state.get_num_tubes(); ++i) {
-        // iterate through every target tube
-        for (int j = 0; j < state.get_num_tubes(); ++j) {
-            // don't attempt to pour into itself
-            if (i == j)
-                continue;
-            // if there is a valid pour...
-            if (state.board[i].is_valid_pour(state.board[j])) {
-                // create a copy of the board state
-                node = new Node(*this);
-                // perform the pour on the copy
-                node->state.board[i].pour(node->state.board[j]);
-                // recalculate values related to the state of the node
-                node->complete = node->calculate_is_game_complete();
-                node->num_valid_pours = node->calculate_num_valid_pours();
-                node->depth = depth + 1;
-                node->move_description = std::to_string(i + 1) + " -> " + std::to_string(j + 1);
-                // insert it into the children
-                children.push_back(node);
-
-                node->print_state();
-
-                // if a complete board state is found, no need to find more children.
-                if (node->complete) {
-                    return true;
-                }
-                // if the node can not proceed, this branch is done.
-                else if (node->num_valid_pours == 0) {
-                    return false;
-                }
-            }
-        }
-    }
-
-    // populate all of the children of each child node, return true if any of them find a solution
-    for (Node *child: children) {
-        if (child->bf_populate_children()) {
-            return true;
-        }
-    }
-
     // there are no solutions possible from this board state
     return false;
 }
@@ -192,7 +133,7 @@ void Node::print_state() const
  * @param path vector of nodes representing the path taken
  * @return bool representing whether bool was found in the searched subtree
  */
-bool Solver::df_find_solution(Node *node, std::vector<Node*> &path)
+bool Solver::find_solution(Node *node, std::vector<Node*> &path)
 {
     // If the node empty, stop here
     if (node == nullptr)
@@ -205,39 +146,7 @@ bool Solver::df_find_solution(Node *node, std::vector<Node*> &path)
     // if any of the node's children is a complete board state, return true
     // search the children from right to left, as the solution should be the rightmost path in the tree
     for (unsigned long i = node->children.size() - 1; i >= 0; --i) {
-        if (df_find_solution(node->children[i], path)) {
-            return true;
-        }
-    }
-    // if the solution was not found in any of the children, the node is not part of the path
-    path.pop_back();
-    return false;
-}
-
-/**
- * Perform a breadth-first search of the solution tree.
- * Along the way, keep track of the moves required to reach the solution.
- *
- * TODO: Make breadth-first
- *
- * @param node pointing to the subtree to search
- * @param path vector of nodes representing the path taken
- * @return bool representing whether bool was found in the searched subtree
- */
-bool Solver::bf_find_solution(Node *node, std::vector<Node*> &path)
-{
-    // If the node empty, stop here
-    if (node == nullptr)
-        return false;
-    // since the node is a candidate for the correct path, add it
-    path.push_back(node);
-    // if the given node is a complete board state, solution found and return
-    if (node->complete)
-        return true;
-    // if any of the node's children is a complete board state, return true
-    // search the children from right to left, as the solution should be the rightmost path in the tree
-    for (unsigned long i = node->children.size() - 1; i >= 0; --i) {
-        if (df_find_solution(node->children[i], path)) {
+        if (find_solution(node->children[i], path)) {
             return true;
         }
     }
@@ -277,7 +186,7 @@ int Solver::count_nodes() const
 /**
  * Wrapper function to populate the tree, find the solution, and print the path to the solution found.
  */
-void Solver::run(bool deep_solve)
+void Solver::run()
 {
     // time tracking done within this function, locally use this namespace for readability
     using namespace std::chrono;
@@ -285,28 +194,16 @@ void Solver::run(bool deep_solve)
     // populate the tree and measure how long it takes.
     auto start_pop = high_resolution_clock::now();
     // if the user chooses to perform a deep solve, it calculates breadth first for the shortest possible solution
-    if (deep_solve) {
-        if (!root->bf_populate_children())
-            std::cout << "There was an error, no solution found\n";
-    }
-    else {
-        if (!root->df_populate_children())
-            std::cout << "There was an error, no solution found\n";
-    }
+    if (!root->populate_children())
+        std::cout << "There was an error, no solution found\n";
     auto stop_pop = high_resolution_clock::now();
     auto duration_to_populate_tree = duration_cast<microseconds>(stop_pop - start_pop);
 
     // find the path to the solution
     auto start_find = high_resolution_clock::now();
     std::vector<Node*> path;
-    if (deep_solve) {
-        if (!bf_find_solution(root, path))
-            std::cout << "There was an error, could not find path to solution\n";
-    }
-    else {
-        if (!df_find_solution(root, path))
-            std::cout << "There was an error, could not find path to solution\n";
-    }
+    if (!find_solution(root, path))
+        std::cout << "There was an error, could not find path to solution\n";
     auto stop_find = high_resolution_clock::now();
     auto duration_to_find_solution = duration_cast<microseconds>(stop_find - start_find);
 

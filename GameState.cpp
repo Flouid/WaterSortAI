@@ -5,17 +5,6 @@
 #include "GameState.h"
 
 /**
- * Copy constructor.
- *
- * @param state of the board to copy
- */
-GameState::GameState(const GameState &state)
-{
-    board = state.board;
-    num_tubes = state.num_tubes;
-}
-
-/**
  * Print the state of the game state.
  */
 void GameState::print_board() const
@@ -26,6 +15,3 @@ void GameState::print_board() const
     }
     std::cout << std::endl;
 }
-
-
-

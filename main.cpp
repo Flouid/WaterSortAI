@@ -36,24 +36,16 @@ GameState ingest_text_file(const string &filename)
 void solve_from_text_file()
 {
     string filename;
-    char deep_solve;
 
     cout << "Enter the name of an input text file (w/o .txt): ";
     cin >> filename;
     cin.ignore(); // the \n character
 
-    cout << "Perform deep solve? (y/n): ";
-    cin >> deep_solve;
-    cin.ignore(); // the \n character
-
-    // blank space
+    // blank line
     cout << endl;
 
     Solver solver(ingest_text_file(filename + ".txt"));
-    if (deep_solve == 'y')
-        solver.run(true);
-    else
-        solver.run(false);
+    solver.run();
     cout << "The generated tree had " << solver.count_nodes() << " nodes\n";
 }
 
