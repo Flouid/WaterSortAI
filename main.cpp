@@ -39,16 +39,10 @@ void solve_from_text_file()
     cout << "Enter the name of an input text file (w/o .txt): ";
     cin >> filename;
     cin.ignore(); // the \n character
-
-    // blank line
     cout << endl;
 
     Solver solver(ingest_text_file(filename + ".txt"));
     solver.run();
-
-    solver.print_tree();
-
-    cout << "The generated tree had " << solver.count_nodes() << " nodes\n";
 }
 
 int main()

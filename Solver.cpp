@@ -73,7 +73,6 @@ bool Node::calculate_is_game_complete() const
  */
 bool Node::populate_children()
 {
-    Node *node;
     // iterate through every source tube
     for (int i = 0; i < state.size(); ++i) {
         // iterate through every target tube
@@ -83,22 +82,19 @@ bool Node::populate_children()
                 continue;
             // if there is a valid pour...
             if (state[i].is_valid_pour(state[j])) {
-                // create a copy of the board state
-                node = new Node(*this);
-                // wipe any children
-                node->children.clear();
+                // create a copy of the game state
+                std::vector<Tube> new_state = state;
                 // perform the pour on the copy
-                node->state[i].pour(node->state[j]);
-                // recalculate values related to the state of the node
-                node->complete = node->calculate_is_game_complete();
-                node->num_valid_pours = node->calculate_num_valid_pours();
-                node->depth = depth + 1;
-                node->move_description = std::to_string(i + 1) + " -> " + std::to_string(j + 1);
+                new_state[i].pour(new_state[j]);
+                // create a new node with the new game state
+                Node *new_node = new Node(new_state,
+                                          std::to_string(i + 1) + " -> " + std::to_string(j + 1),
+                                          depth + 1);
                 // insert it into the children
-                children.push_back(node);
+                children.push_back(new_node);
 
                 // if a node is complete or any of its children are complete, we are done
-                if (node->complete || node->populate_children())
+                if (new_node->complete || new_node->populate_children())
                     return true;
             }
         }
@@ -201,6 +197,7 @@ void Solver::print_tree() const
 {
     std::cout << std::endl;
     print_tree(root);
+    std::cout << std::endl;
 }
 
 /**
@@ -227,10 +224,15 @@ void Solver::run()
     auto stop_find = high_resolution_clock::now();
     auto duration_to_find_solution = duration_cast<microseconds>(stop_find - start_find);
 
+    // print out the entire tree
+    print_tree();
+
     // print the path to the solution
+    std::cout << "Path to solution:\n";
     for (int i = 0; i < path.size(); ++i) {
         printf("[%d]:\t%s\n", i, path[i]->move_description.c_str());
     }
     printf("\nTime required to populate the solution tree:\t%lld microseconds\n", duration_to_populate_tree.count());
     printf("Time required to find the solution in the tree:\t%lld microseconds\n", duration_to_find_solution.count());
+    printf("The generated tree had %d nodes\n", count_nodes());
 }
