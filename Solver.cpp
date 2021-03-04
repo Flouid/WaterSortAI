@@ -87,9 +87,9 @@ bool Node::populate_children()
                 // perform the pour on the copy
                 new_state[i].pour(new_state[j]);
                 // create a new node with the new game state
-                Node *new_node = new Node(new_state,
+                std::shared_ptr<Node> new_node(new Node(new_state,
                                           std::to_string(i + 1) + " -> " + std::to_string(j + 1),
-                                          depth + 1);
+                                          depth + 1));
                 // insert it into the children
                 children.push_back(new_node);
 
@@ -116,7 +116,7 @@ bool Node::populate_children()
  * @param path vector of nodes representing the path taken
  * @return bool representing whether bool was found in the searched subtree
  */
-bool Solver::find_solution(Node *node, std::vector<Node*> &path)
+bool Solver::find_solution(std::shared_ptr<Node> &node, std::vector<std::shared_ptr<Node>> &path)
 {
     // If the node empty, stop here
     if (node == nullptr)
@@ -144,12 +144,12 @@ bool Solver::find_solution(Node *node, std::vector<Node*> &path)
  * @param node pointer to the subtree that should be counted
  * @param n integer storing the number of nodes
  */
-void Solver::count_nodes(const Node *node, int &n) const
+void Solver::count_nodes(const std::shared_ptr<Node> &node, int &n) const
 {
     if (node == nullptr)
         return;
     ++n;
-    for (const Node *child : node->children) {
+    for (const std::shared_ptr<Node> &child : node->children) {
         count_nodes(child, n);
     }
 }
@@ -171,7 +171,7 @@ int Solver::count_nodes() const
  *
  * @param node pointer to subtree to print.
  */
-void Solver::print_tree(const Node *node) const
+void Solver::print_tree(const std::shared_ptr<Node> &node) const
 {
     // special cases for null pointer
     if (node == nullptr)
@@ -188,7 +188,7 @@ void Solver::print_tree(const Node *node) const
         printf("%s:  %d\n", node->move_description.c_str(), node->num_valid_pours);
     }
     // recursive calls
-    for(const Node *child : node->children) {
+    for(const std::shared_ptr<Node> &child : node->children) {
         print_tree(child);
     }
 }
@@ -218,7 +218,7 @@ void Solver::run()
 
     // find the path to the solution
     auto start_find = high_resolution_clock::now();
-    std::vector<Node*> path;
+    std::vector<std::shared_ptr<Node>> path;
     if (!find_solution(root, path))
         std::cout << "There was an error, could not find path to solution\n";
     auto stop_find = high_resolution_clock::now();

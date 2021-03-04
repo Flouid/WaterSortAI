@@ -24,7 +24,7 @@ public:
     bool populate_children();
 
     std::vector<Tube> state;
-    std::vector<Node*> children;
+    std::vector<std::shared_ptr<Node>> children;
     std::string move_description;
     int depth;
     int num_valid_pours;
@@ -44,11 +44,11 @@ public:
     void print_tree() const;
 
 private:
-    Node* root;
+    std::shared_ptr<Node> root;
 
-    bool find_solution(Node *node, std::vector<Node*> &path);
-    void count_nodes(const Node *node, int &n) const;
-    void print_tree(const Node *node) const;
+    bool find_solution(std::shared_ptr<Node> &node, std::vector<std::shared_ptr<Node>> &path);
+    void count_nodes(const std::shared_ptr<Node> &node, int &n) const;
+    void print_tree(const std::shared_ptr<Node> &node) const;
 };
 
 #endif //WATERSORT_SOLVER_H
