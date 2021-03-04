@@ -91,14 +91,44 @@ bool Node::populate_children()
         children.push_back(new_node);
 
         // if a node is complete or any of its children are complete, we are done
-        if (new_node->complete || new_node->populate_children())
+        if (new_node->complete)
             return true;
     }
     if (valid_pours.size() != children.size()) {
         std::cout << "Critical Error: Mismatch between number of valid pours and number of children\n";
         exit(1);
     }
-    // there are no solutions possible from this board state
+    return false;
+}
+
+bool Solver::populate()
+{
+    if (root == nullptr)
+        return false;
+
+    // create a queue and push the root
+    std::queue<std::shared_ptr<Node>> queue;
+    queue.push(root);
+    // continue the core loop until every node has been processed
+    while (!queue.empty()) {
+        // not sure why exactly this is here
+        int n = queue.size();
+
+        // while there are still children to process
+        while (n > 0) {
+            // pop the node off of the queue and populate it
+            std::shared_ptr<Node> node = queue.front();
+            queue.pop();
+            if (node->populate_children())
+                return true;
+
+            // push all of the children onto the queue
+            for (std::shared_ptr<Node> &child : node->children)
+                queue.push(child);
+            // a parent has been processed
+            n--;
+        }
+    }
     return false;
 }
 
@@ -123,8 +153,8 @@ bool Solver::find_solution(std::shared_ptr<Node> &node, std::vector<std::shared_
         return true;
     // if any of the node's children is a complete board state, return true
     // search the children from right to left, as the solution should be the rightmost path in the tree
-    for (unsigned long i = node->children.size() - 1; i >= 0; --i) {
-        if (find_solution(node->children[i], path)) {
+    for (std::shared_ptr<Node> &child : node->children) {
+        if (find_solution(child, path)) {
             return true;
         }
     }
@@ -180,7 +210,11 @@ void Solver::print_tree(const std::shared_ptr<Node> &node) const
         printf("Initial Valid Moves = %lu\n", root->valid_pours.size());
     }
     else {
-        printf("%s:  %lu\n", node->move_description.c_str(), node->valid_pours.size());
+        printf("%s:  %lu", node->move_description.c_str(), node->valid_pours.size());
+        if (node->complete)
+            printf(" !!!!!\n");
+        else
+            printf("\n");
     }
     // recursive calls
     for(const std::shared_ptr<Node> &child : node->children) {
@@ -209,7 +243,7 @@ void Solver::run()
     // populate the tree and measure how long it takes.
     auto start_pop = high_resolution_clock::now();
     // if the user chooses to perform a deep solve, it calculates breadth first for the shortest possible solution
-    if (!root->populate_children())
+    if (!populate())
         std::cout << "There was an error, no solution found\n";
     auto stop_pop = high_resolution_clock::now();
     auto duration_to_populate_tree = duration_cast<microseconds>(stop_pop - start_pop);

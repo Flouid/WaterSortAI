@@ -7,7 +7,7 @@
 
 #include <utility>
 #include <chrono>
-#include <ctime>
+#include <queue>
 
 #include "Tube.h"
 
@@ -51,6 +51,7 @@ private:
     bool find_solution(std::shared_ptr<Node> &node, std::vector<std::shared_ptr<Node>> &path);
     void count_nodes(const std::shared_ptr<Node> &node, int &n) const;
     void print_tree(const std::shared_ptr<Node> &node) const;
+    bool populate();
 };
 
 #endif //WATERSORT_SOLVER_H
