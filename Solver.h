@@ -45,7 +45,6 @@ public:
     void time_test(int repetitions = 25);
     int count_nodes() const;
     void print_tree() const;
-    std::shared_ptr<Node> get_root() const { return root; }
 
 private:
     std::shared_ptr<Node> root;
