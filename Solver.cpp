@@ -101,6 +101,11 @@ bool Node::populate_children()
     return false;
 }
 
+/**
+ * Iteratively populate the tree
+ *
+ * @return
+ */
 bool Solver::populate()
 {
     if (root == nullptr)
@@ -109,16 +114,27 @@ bool Solver::populate()
     // create a queue and push the root
     std::queue<std::shared_ptr<Node>> queue;
     queue.push(root);
+
+    // track which board states have already been seen so we can skip them
+    std::vector<std::vector<Tube>> states;
+
     // continue the core loop until every node has been processed
     while (!queue.empty()) {
-        // not sure why exactly this is here
+        // figure out how many nodes are on this level
         int n = queue.size();
 
-        // while there are still children to process
+        // while there are still nodes on this level
         while (n > 0) {
             // pop the node off of the queue and populate it
             std::shared_ptr<Node> node = queue.front();
             queue.pop();
+            // if the state has already been seen, decrement n and continue
+            if (std::find(states.begin(), states.end(), node->state) != states.end()) {
+                n--;
+                continue;
+            }
+            states.push_back(node->state);
+            // otherwise, populate it's children and stop if one of them is a solution
             if (node->populate_children())
                 return true;
 

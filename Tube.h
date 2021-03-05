@@ -17,6 +17,7 @@ class Tube
 public:
     friend std::ostream & operator<<(std::ostream &out, const Tube &t);
     friend std::istream & operator>>(std::istream &in, Tube &t);
+    friend bool operator==(const Tube &t1, const Tube &t2);
 
     Tube() : Tube({"empty", "empty", "empty", "empty"}) {}
     explicit Tube(std::vector<std::string> tube_values);

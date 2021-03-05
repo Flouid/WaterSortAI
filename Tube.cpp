@@ -56,6 +56,18 @@ std::istream & operator>>(std::istream &in, Tube &t)
 }
 
 /**
+ * Overloaded equals operator to compare two tubes.
+ *
+ * @param t1 Tube representing the left argument
+ * @param t2 Tube representing the right argument
+ * @return boolean representing equality
+ */
+bool operator==(const Tube &t1, const Tube &t2)
+{
+    return t1.values == t2.values;
+}
+
+/**
  * Detailed constructor for initializing a tube.
  *
  * @param tube_name
