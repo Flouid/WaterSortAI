@@ -132,60 +132,13 @@ bool Node::populate_children()
         // insert it into the children
         children.push_back(new_node);
 
-        // if a node is complete or any of its children are complete, we are done
-        if (new_node->complete)
+        // if a node is complete
+        if (new_node->complete || new_node->populate_children())
             return true;
     }
     if (valid_pours.size() != children.size()) {
         std::cout << "Critical Error: Mismatch between number of valid pours and number of children\n";
         exit(1);
-    }
-    return false;
-}
-
-/**
- * Iteratively populate the tree
- *
- * @return
- */
-bool Solver::populate()
-{
-    if (root == nullptr)
-        return false;
-
-    // create a queue and push the root
-    std::queue<std::shared_ptr<Node>> queue;
-    queue.push(root);
-
-    // track which board states have already been seen so we can skip them
-    std::vector<std::vector<Tube>> states;
-
-    // continue the core loop until every node has been processed
-    while (!queue.empty()) {
-        // figure out how many nodes are on this level
-        int n = queue.size();
-
-        // while there are still nodes on this level
-        while (n > 0) {
-            // pop the node off of the queue and populate it
-            std::shared_ptr<Node> node = queue.front();
-            queue.pop();
-            // if the state has already been seen, decrement n and continue
-            if (std::find(states.begin(), states.end(), node->state) != states.end()) {
-                n--;
-                continue;
-            }
-            states.push_back(node->state);
-            // otherwise, populate it's children and stop if one of them is a solution
-            if (node->populate_children())
-                return true;
-
-            // push all of the children onto the queue
-            for (std::shared_ptr<Node> &child : node->children)
-                queue.push(child);
-            // a parent has been processed
-            n--;
-        }
     }
     return false;
 }
@@ -301,7 +254,7 @@ void Solver::run()
     // populate the tree and measure how long it takes.
     auto start_pop = high_resolution_clock::now();
     // if the user chooses to perform a deep solve, it calculates breadth first for the shortest possible solution
-    if (!populate())
+    if (!root->populate_children())
         std::cout << "There was an error, no solution found\n";
     auto stop_pop = high_resolution_clock::now();
     auto duration_to_populate_tree = duration_cast<microseconds>(stop_pop - start_pop);
