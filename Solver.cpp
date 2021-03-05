@@ -29,9 +29,9 @@ Node::Node(const std::vector<Tube> &game_state, std::string move, int dep)
  *
  * @return int representing total number of valid pours
  */
-std::vector<std::tuple<int, int>> Node::calculate_valid_pours()
+std::vector<std::pair<int, int>> Node::calculate_valid_pours()
 {
-    std::vector<std::tuple<int, int>> pours;
+    std::vector<std::pair<int, int>> pours;
     // iterate through every source tube
     for (int i = 0; i < state.size(); ++i) {
         // iterate through every target tube
@@ -76,7 +76,7 @@ bool Node::populate_children()
 {
     int i;
     int j;
-    for (const std::tuple<int, int> &valid_pour : valid_pours) {
+    for (const std::pair<int, int> &valid_pour : valid_pours) {
         i = std::get<0>(valid_pour);
         j = std::get<1>(valid_pour);
         // create a copy of the game state
