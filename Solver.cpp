@@ -76,7 +76,7 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const {
     int target = std::get<1>(pour);
     int score = 0;
 
-    // declare it and default it to a dummy value
+    // declare color_under_top and default it to a dummy value
     std::string color_under_top = "invalid";
     // if there is a slot beneath the top color of the source...
     if (state[source].get_free_spaces() < 3) {
