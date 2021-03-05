@@ -8,6 +8,7 @@
 #include <utility>
 #include <chrono>
 #include <queue>
+#include <map>
 
 #include "Tube.h"
 
@@ -19,7 +20,7 @@ public:
     explicit Node(const std::vector<Tube> &tubes) : Node(tubes, "Initialization", 0) {}
     Node(const std::vector<Tube> &game_state, std::string move, int dep);
 
-    std::vector<std::pair<int, int>> calculate_valid_pours();
+    std::multimap<int, std::pair<int, int>> calculate_valid_pours();
     bool calculate_is_game_complete() const;
     int evaluate_pour(const std::pair<int, int> &pour) const;
 
@@ -27,7 +28,7 @@ public:
 
     std::vector<Tube> state;
     std::vector<std::shared_ptr<Node>> children;
-    std::vector<std::pair<int, int>> valid_pours;
+    std::multimap<int, std::pair<int, int>> valid_pours;
     std::string move_description;
     int depth;
     bool complete;

@@ -25,13 +25,14 @@ Node::Node(const std::vector<Tube> &game_state, std::string move, int dep)
 }
 
 /**
- * Calculates the total number of valid pour operations for the current game state
+ * Calculates the total number of valid pour operations for the current game state.
+ * Stores them in a map indexed by an evaluation of how good each move is.
  *
- * @return int representing total number of valid pours
+ * @return multimap containing all valid pours, ordered by how good each move is
  */
-std::vector<std::pair<int, int>> Node::calculate_valid_pours()
+std::multimap<int, std::pair<int, int>> Node::calculate_valid_pours()
 {
-    std::vector<std::pair<int, int>> pours;
+    std::multimap<int, std::pair<int, int>> pours;
     // iterate through every source tube
     for (int i = 0; i < state.size(); ++i) {
         // iterate through every target tube
@@ -40,7 +41,7 @@ std::vector<std::pair<int, int>> Node::calculate_valid_pours()
             if (i == j)
                 continue;
             if (state[i].is_valid_pour(state[j]))
-                pours.emplace_back(i, j);
+                pours.insert(std::pair<int, std::pair<int, int>>(evaluate_pour({i, j}), {i, j}));
         }
     }
     return pours;
@@ -115,9 +116,11 @@ bool Node::populate_children()
 {
     int i;
     int j;
-    for (const std::pair<int, int> &valid_pour : valid_pours) {
-        i = std::get<0>(valid_pour);
-        j = std::get<1>(valid_pour);
+    // goes through all of the valid pours in reverse order
+    // this should populate the best moves first
+    for (auto iterator = valid_pours.rbegin(); iterator != valid_pours.rend(); ++iterator) {
+        i = std::get<0>(iterator->second);
+        j = std::get<1>(iterator->second);
         // create a copy of the game state
         std::vector<Tube> new_state = state;
         // perform the pour on the copy
