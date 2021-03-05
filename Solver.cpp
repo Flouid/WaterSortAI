@@ -87,19 +87,26 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const {
 
     for (int i = 0; i < state.size(); ++i) {
         // the target and source would changed by this pour so they don't contribute to score
-        if (i == target) {
+        if (i == target || i == source) {
             continue;
         }
-        // if the current node could pour into the source tube after the operation, increase the score
+        // if the current node could pour into the source tube after the operation, increase the score dramatically
         // will only work if color_under_top was set prior to the loop
         if (state[i].get_top_color() == color_under_top)
             ++score;
 
         // if the current node and the source share a top color, the current node might be able to pour into the
-        // source as well, increase the score
+        // target as well, increase the score
         if (state[i].get_top_color() == state[source].get_top_color())
             ++score;
     }
+
+    // heavily penalize pouring into an empty tube
+    if (state[target].is_empty())
+        score -= 10;
+
+    // reward pouring multiple colors at once
+    score += state[source].get_top_color_depth();
 
     return score;
 }
