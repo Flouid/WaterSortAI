@@ -71,8 +71,8 @@ bool Node::calculate_is_game_complete() const
  * @param pour pair representing a pair of indices in state to do a pour operation on
  * @return move score, higher is better
  */
-int Node::evaluate_pour(const std::pair<int, int> &pour) const {
-
+int Node::evaluate_pour(const std::pair<int, int> &pour) const
+{
     // declare named variables for the source and target tubes
     int source = std::get<0>(pour);
     int target = std::get<1>(pour);
