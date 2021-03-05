@@ -73,40 +73,36 @@ bool Node::calculate_is_game_complete() const
  */
 int Node::evaluate_pour(const std::pair<int, int> &pour) const {
 
+    // declare named variables for the source and target tubes
     int source = std::get<0>(pour);
     int target = std::get<1>(pour);
+    // keep track of the heuristic score
     int score = 0;
+    // create a copy of the gamestate
+    std::vector<Tube> new_state = state;
 
-    // declare color_under_top and default it to a dummy value
-    std::string color_under_top = "invalid";
-    // if there is a slot beneath the top color of the source...
-    if (state[source].get_free_spaces() < 3) {
-        // this angry mess finds the color of the slot beneath the top of the source tube
-        color_under_top = state[source].get_values()[state[source].get_free_spaces() + 1];
-    }
+    // simulate the pour
+    new_state[source].pour(new_state[target]);
 
-    for (int i = 0; i < state.size(); ++i) {
-        // the target and source would changed by this pour so they don't contribute to score
-        if (i == target || i == source) {
-            continue;
-        }
-        // if the current node could pour into the source tube after the operation, increase the score dramatically
-        // will only work if color_under_top was set prior to the loop
-        if (state[i].get_top_color() == color_under_top)
-            ++score;
-
-        // if the current node and the source share a top color, the current node might be able to pour into the
-        // target as well, increase the score
-        if (state[i].get_top_color() == state[source].get_top_color())
-            ++score;
-    }
-
+    // reward pours that would empty out the source tube and create an empty tube
+    score += new_state[source].is_empty();
+    // reward pours that would fill up the target tube
+    score += new_state[target].get_top_color_depth() == 4;
+    // reward pouring several slots at a time
+    score += state[source].get_top_color_depth() - 1;
     // heavily penalize pouring into an empty tube
     if (state[target].is_empty())
         score -= 10;
 
-    // reward pouring multiple colors at once
-    score += state[source].get_top_color_depth();
+    for (int i = 0; i < state.size(); ++i) {
+        if (i == source || i == target)
+            continue;
+        // if source wouldn't be emptied by the pour, reward pours that open up new pours
+        if (!new_state[source].is_empty())
+            score += new_state[i].is_valid_pour(new_state[source]);
+        // reward pours if there are other tubes that could also pour into the target
+        score += new_state[i].is_valid_pour(new_state[target]);
+    }
 
     return score;
 }
