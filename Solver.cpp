@@ -65,7 +65,7 @@ bool Node::calculate_is_game_complete() const
 }
 
 /**
- * Evaluates a pour to determine how good of a move it is. Higher scores represent theoretically better moves
+ * Evaluates a pour to determine how good of a move it is. Higher scores represent theoretically better moves.
  *
  * @param pour pair representing a pair of indices in state to do a pour operation on
  * @return move score, higher is better
@@ -75,8 +75,14 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const {
     int source = std::get<0>(pour);
     int target = std::get<1>(pour);
     int score = 0;
-    // this angry mess finds the color of the slot beneath the top of the source tube
-    std::string color_under_top = state[source].get_values()[state[source].get_free_spaces() + 1];
+
+    // declare it and default it to a dummy value
+    std::string color_under_top = "invalid";
+    // if there is a slot beneath the top color of the source...
+    if (state[source].get_free_spaces() < 3) {
+        // this angry mess finds the color of the slot beneath the top of the source tube
+        color_under_top = state[source].get_values()[state[source].get_free_spaces() + 1];
+    }
 
     for (int i = 0; i < state.size(); ++i) {
         // the target and source would changed by this pour so they don't contribute to score
@@ -84,6 +90,7 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const {
             continue;
         }
         // if the current node could pour into the source tube after the operation, increase the score
+        // will only work if color_under_top was set prior to the loop
         if (state[i].get_top_color() == color_under_top)
             ++score;
 
