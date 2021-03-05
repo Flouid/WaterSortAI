@@ -25,8 +25,11 @@ public:
     bool pour(Tube &target);
     bool is_valid_pour(Tube &target) const;
 
-    int get_top_color_depth() const {return top_color_depth;}
-    bool is_empty() const {return empty;}
+    std::vector<std::string> get_values() const { return values; }
+    std::string get_top_color() const { return top_color; }
+    bool is_empty() const { return empty; }
+    int get_free_spaces() const { return free_spaces; }
+    int get_top_color_depth() const { return top_color_depth; }
 
 private:
     std::vector<std::string> values;

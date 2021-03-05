@@ -65,6 +65,38 @@ bool Node::calculate_is_game_complete() const
 }
 
 /**
+ * Evaluates a pour to determine how good of a move it is. Higher scores represent theoretically better moves
+ *
+ * @param pour pair representing a pair of indices in state to do a pour operation on
+ * @return move score, higher is better
+ */
+int Node::evaluate_pour(const std::pair<int, int> &pour) const {
+
+    int source = std::get<0>(pour);
+    int target = std::get<1>(pour);
+    int score = 0;
+    // this angry mess finds the color of the slot beneath the top of the source tube
+    std::string color_under_top = state[source].get_values()[state[source].get_free_spaces() + 1];
+
+    for (int i = 0; i < state.size(); ++i) {
+        // the target and source would changed by this pour so they don't contribute to score
+        if (i == target) {
+            continue;
+        }
+        // if the current node could pour into the source tube after the operation, increase the score
+        if (state[i].get_top_color() == color_under_top)
+            ++score;
+
+        // if the current node and the source share a top color, the current node might be able to pour into the
+        // source as well, increase the score
+        if (state[i].get_top_color() == state[source].get_top_color())
+            ++score;
+    }
+
+    return score;
+}
+
+/**
  * Populates all of the children of a node.
  * For each valid move possible, copies the gamestate to a new child node and performs that move.
  * If a move results in a completed board state, stop and return true. Otherwise, return false.

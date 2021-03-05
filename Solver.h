@@ -21,6 +21,7 @@ public:
 
     std::vector<std::pair<int, int>> calculate_valid_pours();
     bool calculate_is_game_complete() const;
+    int evaluate_pour(const std::pair<int, int> &pour) const;
 
     bool populate_children();
 
@@ -44,6 +45,7 @@ public:
     void time_test(int repetitions = 25);
     int count_nodes() const;
     void print_tree() const;
+    std::shared_ptr<Node> get_root() const { return root; }
 
 private:
     std::shared_ptr<Node> root;
