@@ -83,7 +83,7 @@ bool Node::calculate_is_game_complete() const
  * @param pour pair representing a pair of indices in state to do a pour operation on
  * @return move score, higher is better
  */
-int Node::evaluate_pour(const std::pair<int, int> &pour) const
+int Node::evaluate_pour(const std::pair<int, int> &pour, int n) const
 {
     // declare named variables for the source and target tubes
     int source = std::get<0>(pour);
@@ -110,12 +110,18 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const
     if (state[target].is_empty())
         score -= 10;
 
+    int source_free_spaces = state[source].get_free_spaces();
     for (int i = 0; i < state.size(); ++i) {
         if (i == source || i == target)
             continue;
         // if source wouldn't be emptied by the pour, reward pours that open up new pours
-        if (!new_state[source].is_empty())
-            score += new_state[i].is_valid_pour(new_state[source]);
+        // can only award as many points as there are spaces to pour into
+        if (!new_state[source].is_empty() && source_free_spaces > 0) {
+            if (new_state[i].is_valid_pour(new_state[source])) {
+                ++score;
+                source_free_spaces -= new_state[i].get_top_color_depth();
+            }
+        }
         // reward pours if there are other tubes that could also pour into the target
         score += new_state[i].is_valid_pour(new_state[target]);
     }

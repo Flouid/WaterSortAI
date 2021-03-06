@@ -24,7 +24,7 @@ public:
 
     std::multimap<int, std::pair<int, int>> calculate_valid_pours();
     bool calculate_is_game_complete() const;
-    int evaluate_pour(const std::pair<int, int> &pour) const;
+    int evaluate_pour(const std::pair<int, int> &pour, int n = 0) const;
     int evaluate_state() const;
 
     bool r_populate_children();
