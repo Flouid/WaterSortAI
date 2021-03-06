@@ -115,7 +115,7 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const
  *
  * @return bool representing whether or not a child node was found.
  */
-bool Node::populate_children()
+bool Node::r_populate_children()
 {
     int i;
     int j;
@@ -136,7 +136,7 @@ bool Node::populate_children()
         children.push_back(new_node);
 
         // if a node is complete
-        if (new_node->complete || new_node->populate_children())
+        if (new_node->complete || new_node->r_populate_children())
             return true;
     }
     if (valid_pours.size() != children.size()) {
@@ -249,16 +249,19 @@ void Solver::print_tree() const
 /**
  * Wrapper function to populate the tree, find the solution, and print the path to the solution found.
  */
-void Solver::run()
+void Solver::run(bool fast_solve)
 {
     // time tracking done within this function, locally use this namespace for readability
     using namespace std::chrono;
 
     // populate the tree and measure how long it takes.
     auto start_pop = high_resolution_clock::now();
-    // if the user chooses to perform a deep solve, it calculates breadth first for the shortest possible solution
-    if (!root->populate_children())
-        std::cout << "There was an error, no solution found\n";
+    if (fast_solve) {
+        if (!root->r_populate_children())
+            std::cout << "There was an error, could not populate solution\n";
+    }
+    else
+        root;
     auto stop_pop = high_resolution_clock::now();
     auto duration_to_populate_tree = duration_cast<microseconds>(stop_pop - start_pop);
 
@@ -288,7 +291,7 @@ void Solver::run()
  *
  * @param repetitions int representing the number of repetitions to average across
  */
-void Solver::time_test(int repetitions)
+void Solver::r_time_test(int repetitions)
 {
     using namespace std::chrono;
 
@@ -306,7 +309,7 @@ void Solver::time_test(int repetitions)
         // populate the tree and measure how long it takes.
         auto start_pop = high_resolution_clock::now();
         // if the user chooses to perform a deep solve, it calculates breadth first for the shortest possible solution
-        if (!root->populate_children())
+        if (!root->r_populate_children())
             std::cout << "There was an error, no solution found\n";
         auto stop_pop = high_resolution_clock::now();
         total_population_duration += duration_cast<microseconds>(stop_pop - start_pop).count();

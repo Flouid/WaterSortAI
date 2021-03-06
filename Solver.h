@@ -24,7 +24,7 @@ public:
     bool calculate_is_game_complete() const;
     int evaluate_pour(const std::pair<int, int> &pour) const;
 
-    bool populate_children();
+    bool r_populate_children();
 
     std::vector<Tube> state;
     std::vector<std::shared_ptr<Node>> children;
@@ -42,8 +42,8 @@ class Solver
 public:
     explicit Solver(const std::vector<Tube> &state) : root(new Node(state)) {}
 
-    void run();
-    void time_test(int repetitions = 25);
+    void run(bool fast_solve);
+    void r_time_test(int repetitions = 25);
     int count_nodes() const;
     void print_tree() const;
 
