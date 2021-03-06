@@ -111,9 +111,9 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const
  * Populates all of the children of a node.
  * For each valid move possible, copies the gamestate to a new child node and performs that move.
  * If a move results in a completed board state, stop and return true. Otherwise, return false.
- * Performs this in a preorder-depth first manner.
+ * Performs this recursively in a preorder-depth first manner.
  *
- * @return bool representing whether or not a child node was found.
+ * @return bool representing whether or not the node generated children
  */
 bool Node::r_populate_children()
 {
@@ -142,6 +142,90 @@ bool Node::r_populate_children()
     if (valid_pours.size() != children.size()) {
         std::cout << "Critical Error: Mismatch between number of valid pours and number of children\n";
         exit(1);
+    }
+    return false;
+}
+
+/**
+ * Populates all of the children of a node.
+ * For each valid move possible, copies the gamestate to a new child node and performs that move.
+ * If a move results in a completed board state, stop and return true. Otherwise, return false.
+ *
+ * @return bool representing whether or not the node generated children
+ */
+bool Node::p_populate_children()
+{
+    int i;
+    int j;
+    // traverse the map of valid pours in reverse order, since better moves were placed further back
+    for (auto iterator = valid_pours.rbegin(); iterator != valid_pours.rend(); ++iterator) {
+        i = std::get<0>(iterator->second);
+        j = std::get<1>(iterator->second);
+        // create a copy of the game state
+        std::vector<Tube> new_state = state;
+        // perform the pour on the copy
+        new_state[i].pour(new_state[j]);
+        // create a new node with the new game state
+        std::shared_ptr<Node> new_node(new Node(new_state,
+                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1),
+                                                depth + 1));
+        // insert it into the children
+        children.push_back(new_node);
+
+        // if a node is complete
+        if (new_node->complete)
+            return true;
+    }
+    if (valid_pours.size() != children.size()) {
+        std::cout << "Critical Error: Mismatch between number of valid pours and number of children\n";
+        exit(1);
+    }
+    return false;
+}
+
+/**
+ * Iteratively populate the tree in a level order manner. This finds a shortest possible solution.
+ * VERY SLOW
+ *
+ * @return bool representing whether or not the tree was populated
+ */
+bool Solver::perfect_populate_tree() {
+    if (root == nullptr)
+        return false;
+
+    // create a queue and push the root
+    std::queue<std::shared_ptr<Node>> queue;
+    queue.push(root);
+
+    // track which board states have already been seen so we can skip them
+    std::vector<std::vector<Tube>> states;
+
+    // continue the core loop until every node has been processed
+    while (!queue.empty()) {
+        // figure out how many nodes are on this level
+        int n = queue.size();
+
+        // while there are still nodes on this level
+        while (n > 0) {
+            // pop the node off of the queue and populate it
+            std::shared_ptr<Node> node = queue.front();
+            queue.pop();
+            // if the state has already been seen, decrement n and continue
+            if (std::find(states.begin(), states.end(), node->state) != states.end()) {
+                n--;
+                continue;
+            }
+            states.push_back(node->state);
+            // otherwise, populate it's children and stop if one of them is a solution
+            if (node->p_populate_children())
+                return true;
+
+            // push all of the children onto the queue
+            for (std::shared_ptr<Node> &child : node->children)
+                queue.push(child);
+            // a parent has been processed
+            n--;
+        }
     }
     return false;
 }
@@ -260,8 +344,10 @@ void Solver::run(bool fast_solve)
         if (!root->r_populate_children())
             std::cout << "There was an error, could not populate solution\n";
     }
-    else
-        root;
+    else {
+        if (perfect_populate_tree())
+            std::cout << "There was an error, could not populate solution\n";
+    }
     auto stop_pop = high_resolution_clock::now();
     auto duration_to_populate_tree = duration_cast<microseconds>(stop_pop - start_pop);
 

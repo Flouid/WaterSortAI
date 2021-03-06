@@ -25,6 +25,7 @@ public:
     int evaluate_pour(const std::pair<int, int> &pour) const;
 
     bool r_populate_children();
+    bool p_populate_children();
 
     std::vector<Tube> state;
     std::vector<std::shared_ptr<Node>> children;
@@ -35,7 +36,7 @@ public:
 };
 
 /**
- * Class tracking the root of the non-binary tree and providing a method to populate the entire tree.
+ * Class tracking the root of the non-binary tree and providing a method to perfect_populate_tree the entire tree.
  */
 class Solver
 {
@@ -53,7 +54,7 @@ private:
     bool find_solution(std::shared_ptr<Node> &node, std::vector<std::shared_ptr<Node>> &path);
     void count_nodes(const std::shared_ptr<Node> &node, int &n) const;
     void print_tree(const std::shared_ptr<Node> &node) const;
-    bool populate();
+    bool perfect_populate_tree();
 };
 
 #endif //WATERSORT_SOLVER_H
