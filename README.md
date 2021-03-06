@@ -16,3 +16,5 @@ The program outputs a path to the solution as a sequence of moves. Below is an e
 
 To read this, pour the tube to the left of the arrow into the tube to the right of the arrow, the 0th move is always the initialization of the game state. 
 For example, since level 110 has 11 tubes, begin by pouring the 8th tube into the 11th. The second move is pour the 6th tube into the 11th tube and so forth, the 21rst is pour the first tube into the 9th. 
+
+At the end of the sequence of moves, the game is guaranteed to be solved. 
