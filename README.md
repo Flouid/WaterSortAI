@@ -1,10 +1,15 @@
 # WaterSortAI
 This is a C++ AI that plays the puzzle game Water Sort / Ball Sort automagically.
 
+## Description
 It has two modes, fast solve mode and perfect solve mode.
 Fast solve will take any level and solve it almost instaneously, but doensn't necessarily generate shortest possible solutions, it is very close though.
 Perfect solve will always return a shortest possible path to the solution, but is very performance limited. Using it is not recommended.
 
+## Getting Started
+Download the files and run the Makefile provided, make sure C++11 or later is installed on your computer. 
+
+## Usage
 The program works by taking the name of a text file containing the game state and ingesting it into a game state before running the analysis. Below is an example file l110.txt:
 
 ![image](https://user-images.githubusercontent.com/17460504/110222671-e6af1380-7ea1-11eb-9127-c215f04ac32d.png)
