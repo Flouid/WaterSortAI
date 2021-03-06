@@ -97,11 +97,15 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const
     new_state[source].pour(new_state[target]);
 
     // reward pours that would empty out the source tube and create an empty tube
-    score += new_state[source].is_empty();
+    //score += new_state[source].is_empty();
+    // reward pours that pour into a tube that is all one color
+    score += new_state[target].get_top_color_depth() + new_state[target].get_free_spaces() == 4;
     // reward pours that would fill up the target tube
     score += new_state[target].get_top_color_depth() == 4;
     // reward pouring several slots at a time
     score += state[source].get_top_color_depth() - 1;
+    // reward pouring into less full tubes
+    score += state[target].get_free_spaces() - 1;
     // heavily penalize pouring into an empty tube
     if (state[target].is_empty())
         score -= 10;
