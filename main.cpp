@@ -59,26 +59,23 @@ string get_filename()
  *
  * @return boolean representing whether or not testing mode is on.
  */
-bool get_mode()
+char get_mode()
 {
     char response;
 
-    cout << "Run in performance testing mode? (y/n): ";
+    cout << "Fast or perfect solve? (f/p/h): ";
     cin >> response;
     cin.ignore(); // the \n character
     cout << endl;
 
-    if (response == 'y')
-        return true;
+    if (response == 'f' || response == 'p' || response == 'h')
+        return response;
     else
-        return false;
+        exit(1);
 }
 
 int main()
 {
     Solver solver(ingest_text_file(get_filename()));
-    if (get_mode())
-        solver.time_test();
-    else
-        solver.run();
+    solver.run(get_mode());
 }
