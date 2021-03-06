@@ -180,7 +180,7 @@ bool Node::r_populate_children()
         new_state[i].pour(new_state[j]);
         // create a new node with the new game state
         std::shared_ptr<Node> new_node(new Node(new_state,
-                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1),
+                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1 ) + ":\t\t" + std::to_string(iterator->first),
                                                 depth + 1));
         // insert it into the children
         children.push_back(new_node);
@@ -217,7 +217,7 @@ bool Node::p_populate_children()
         new_state[i].pour(new_state[j]);
         // create a new node with the new game state
         std::shared_ptr<Node> new_node(new Node(new_state,
-                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1),
+                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1 ) + ":\t\t" + std::to_string(iterator->first),
                                                 depth + 1));
         // insert it into the children
         children.push_back(new_node);
