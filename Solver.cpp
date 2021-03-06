@@ -96,8 +96,6 @@ int Node::evaluate_pour(const std::pair<int, int> &pour, int n) const
     // simulate the pour
     new_state[source].pour(new_state[target]);
 
-    // reward pours that would empty out the source tube and create an empty tube
-    //score += new_state[source].is_empty();
     // reward pours that pour into a tube that is all one color
     score += new_state[target].get_top_color_depth() + new_state[target].get_free_spaces() == 4;
     // reward pours that would fill up the target tube
@@ -123,7 +121,9 @@ int Node::evaluate_pour(const std::pair<int, int> &pour, int n) const
             }
         }
         // reward pours if there are other tubes that could also pour into the target
-        score += new_state[i].is_valid_pour(new_state[target]);
+        if (new_state[i].is_valid_pour((new_state[target]))) {
+            ++score;
+        }
     }
 
     return score;
@@ -180,7 +180,7 @@ bool Node::r_populate_children()
         new_state[i].pour(new_state[j]);
         // create a new node with the new game state
         std::shared_ptr<Node> new_node(new Node(new_state,
-                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1 ) + ":\t\t" + std::to_string(iterator->first),
+                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1),
                                                 depth + 1));
         // insert it into the children
         children.push_back(new_node);
@@ -217,7 +217,7 @@ bool Node::p_populate_children()
         new_state[i].pour(new_state[j]);
         // create a new node with the new game state
         std::shared_ptr<Node> new_node(new Node(new_state,
-                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1 ) + ":\t\t" + std::to_string(iterator->first),
+                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1),
                                                 depth + 1));
         // insert it into the children
         children.push_back(new_node);
