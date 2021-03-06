@@ -9,9 +9,13 @@
 #include <utility>
 #include <vector>
 #include <iostream>
-#include <cassert>
 #include <fstream>
 
+/**
+ * A data type representing a tube in the game WaterSort.
+ * Each tube has four slots that can contain a color or be empty.
+ * Colors "fall" within the tube so there cannot be empty slots beneath a full one.
+ */
 class Tube
 {
 public:
@@ -22,11 +26,9 @@ public:
     Tube() : Tube({"empty", "empty", "empty", "empty"}) {}
     explicit Tube(std::vector<std::string> tube_values);
 
-    bool pour(Tube &target);
+    void pour(Tube &target);
     bool is_valid_pour(Tube &target) const;
 
-    std::vector<std::string> get_values() const { return values; }
-    std::string get_top_color() const { return top_color; }
     bool is_empty() const { return empty; }
     int get_free_spaces() const { return free_spaces; }
     int get_top_color_depth() const { return top_color_depth; }

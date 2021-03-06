@@ -68,7 +68,7 @@ char get_mode()
     cin.ignore(); // the \n character
     cout << endl;
 
-    if (response == 'f' || response == 'p' || response == 'h')
+    if (response == 'f' || response == 'p')
         return response;
     else
         exit(1);

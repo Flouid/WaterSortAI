@@ -5,40 +5,28 @@
 #include "Solver.h"
 
 /**
- * Allows comparison of two nodes by ordering based on their state scores.
- *
- * @param n1 the left argument
- * @param n2 the right argument
- * @return bool representing whether or not n1's state score is less than n2's
- */
-bool operator<(const Node &n1, const Node &n2) {
-    return n1.state_score < n2.state_score;
-}
-
-/**
  * Detailed constructor to create a node.
- * Is given a game state, a pointer to its parent, the last move as a string, and the depth...
+ * Takes a game state, the last move made, and the depth as arguments.
  * Determines the number of valid pours and whether or not the board is complete.
  *
- * @param game_state current state of the board
- * @param par pointer to the parent node
+ * @param game_state current state of the board stored as a vector of tubes
  * @param move string representing the move required to get to this state from the parent
  * @param dep integer representing the depth of the current node
  */
-Node::Node(const std::vector<Tube> &game_state, std::string move, int dep)
+Node::Node(const std::vector<Tube> &game_state, const std::string &move, int dep)
 {
     state = game_state;
-    move_description = std::move(move);
+    move_description = move;
     depth = dep;
 
     valid_pours = calculate_valid_pours();
     complete = calculate_is_game_complete();
-    state_score = evaluate_state();
 }
 
 /**
  * Calculates the total number of valid pour operations for the current game state.
- * Stores them in a map indexed by an evaluation of how good each move is.
+ * Stores them in a multi-map indexed by an evaluation of how good each move is.
+ * Pours are stored as a pair of integers.
  *
  * @return multimap containing all valid pours, ordered by how good each move is
  */
@@ -49,9 +37,10 @@ std::multimap<int, std::pair<int, int>> Node::calculate_valid_pours()
     for (int i = 0; i < state.size(); ++i) {
         // iterate through every target tube
         for (int j = 0; j < state.size(); ++j) {
-            // don't pour into itself
+            // don't attempt to pour into itself
             if (i == j)
                 continue;
+            // if the source could pour into the target...
             if (state[i].is_valid_pour(state[j]))
                 pours.insert(std::pair<int, std::pair<int, int>>(evaluate_pour({i, j}), {i, j}));
         }
@@ -80,19 +69,19 @@ bool Node::calculate_is_game_complete() const
 /**
  * Evaluates a pour to determine how good of a move it is. Higher scores represent theoretically better moves.
  *
- * @param pour pair representing a pair of indices in state to do a pour operation on
+ * @param pour pair representing a pair of indices in the game state to do a pour operation on
  * @return move score, higher is better
  */
-int Node::evaluate_pour(const std::pair<int, int> &pour, int n) const
+int Node::evaluate_pour(const std::pair<int, int> &pour) const
 {
     // declare named variables for the source and target tubes
     int source = std::get<0>(pour);
     int target = std::get<1>(pour);
     // keep track of the heuristic score
     int score = 0;
+
     // create a copy of the gamestate
     std::vector<Tube> new_state = state;
-
     // simulate the pour
     new_state[source].pour(new_state[target]);
 
@@ -130,76 +119,45 @@ int Node::evaluate_pour(const std::pair<int, int> &pour, int n) const
 }
 
 /**
- * Return a heuristic evaluation of how good the game state is.
- *
- * @return integer representing how good the game state is
- */
-int Node::evaluate_state() const
-{
-    // calculate the number of grouped colors across all tubes
-    int num_grouped_colors = 0;
-    // for each tube...
-    for (const Tube &tube: state) {
-        // for each value in the tube except the last...
-        for (int i = 0; i < 3; ++i) {
-            // increment the number of grouped colors if the color is the same as the one beneath it
-            num_grouped_colors += (tube.get_values()[i] != "empty" && tube.get_values()[i] == tube.get_values()[i + 1]);
-        }
-    }
-    // get the average move score
-    int move_score_sum = 0;
-    // add the move score of each move to the sum
-    for (const auto & valid_pour : valid_pours) {
-        move_score_sum += valid_pour.first;
-    }
-    int average_move_score = move_score_sum / (int)valid_pours.size();
-
-    return num_grouped_colors + average_move_score;
-}
-
-/**
  * Populates all of the children of a node.
- * For each valid move possible, copies the gamestate to a new child node and performs that move.
+ * For each valid move possible, copies the gamestate to a new child node and calls itself.
  * If a move results in a completed board state, stop and return true. Otherwise, return false.
- * Performs this by heuristically guessing the best moves and exploring those paths first.
+ * Heuristically guesses the best moves and explores those paths first.
  *
  * @return bool representing whether or not the node generated children
  */
 bool Node::r_populate_children()
 {
-    int i;
-    int j;
+    int source;
+    int target;
     // goes through all of the valid pours in reverse order
     // this should populate the best moves first
     for (auto iterator = valid_pours.rbegin(); iterator != valid_pours.rend(); ++iterator) {
-        i = std::get<0>(iterator->second);
-        j = std::get<1>(iterator->second);
+        source = std::get<0>(iterator->second);
+        target = std::get<1>(iterator->second);
         // create a copy of the game state
         std::vector<Tube> new_state = state;
         // perform the pour on the copy
-        new_state[i].pour(new_state[j]);
+        new_state[source].pour(new_state[target]);
         // create a new node with the new game state
-        std::shared_ptr<Node> new_node(new Node(new_state,
-                                                std::to_string(i + 1) + " -> " + std::to_string(j + 1),
-                                                depth + 1));
-        // insert it into the children
+        std::shared_ptr<Node> new_node(new Node(
+                new_state,
+                std::to_string(source + 1) + " -> " + std::to_string(target + 1),
+                depth + 1));
+        // insert the new node into the children vector
         children.push_back(new_node);
 
-        // if a node is complete
+        // if a node is complete, return true. Otherwise, perform the same process on the child node.
         if (new_node->complete || new_node->r_populate_children())
             return true;
-    }
-    if (valid_pours.size() != children.size()) {
-        std::cout << "Critical Error: Mismatch between number of valid pours and number of children\n";
-        exit(1);
     }
     return false;
 }
 
 /**
  * Populates all of the children of a node.
- * For each valid move possible, copies the gamestate to a new child node and performs that move.
  * If a move results in a completed board state, stop and return true. Otherwise, return false.
+ * Uses the same heuristic analysis as the recursive version, even though it doesn't benefit nearly as much.
  *
  * @return bool representing whether or not the node generated children
  */
@@ -281,61 +239,13 @@ bool Solver::perfect_populate_tree() {
 }
 
 /**
- * A totally experimental way of populating the solution tree.
- * Adds each child node to a map that is sorted by a heuristic evaluation of the game state.
- * Treat the map like a queue and always look at the last element before removing it from the map.
- *
- * @return bool representing whether or not the tree was populated
- */
-bool Solver::hybrid_populate_tree() {
-    if (root == nullptr)
-        return false;
-
-    // create a queue and push the root
-    std::priority_queue<std::shared_ptr<Node>> queue;
-    queue.push(root);
-
-    // track which board states have already been seen so we can skip them
-    std::vector<std::vector<Tube>> states;
-
-    // continue the core loop until every node has been processed
-    while (!queue.empty()) {
-        // figure out how many nodes are on this level
-        int n = queue.size();
-
-        // while there are still nodes on this level
-        while (n > 0) {
-            // pop the node off of the queue and populate it
-            std::shared_ptr<Node> node = queue.top();
-            queue.pop();
-            // if the state has already been seen, decrement n and continue
-            if (std::find(states.begin(), states.end(), node->state) != states.end()) {
-                n--;
-                continue;
-            }
-            states.push_back(node->state);
-            // otherwise, populate it's children and stop if one of them is a solution
-            if (node->p_populate_children())
-                return true;
-
-            // push all of the children onto the queue
-            for (std::shared_ptr<Node> &child : node->children)
-                queue.push(child);
-            // a parent has been processed
-            n--;
-        }
-    }
-    return false;
-}
-
-/**
- * Perform a depth-first search of the solution tree.
+ * Perform a preorder depth-first search of the solution tree.
  * Along the way, keep track of the moves required to reach the solution.
- * Since the tree is populated left->right, search the rightmost branches first as that's where the solution should be.
+ * Remove moves that resulted in a dead-end.
  *
  * @param node pointing to the subtree to search
  * @param path vector of nodes representing the path taken
- * @return bool representing whether bool was found in the searched subtree
+ * @return bool representing whether a solution was found in the searched subtree
  */
 bool Solver::find_solution(std::shared_ptr<Node> &node, std::vector<std::shared_ptr<Node>> &path)
 {
@@ -376,7 +286,7 @@ void Solver::count_nodes(const std::shared_ptr<Node> &node, int &n) const
 }
 
 /**
- * Public wrapper function to provide users of Solver to count the number of nodes in the tree.
+ * Public wrapper function to provide users of Solver a method to count the number of nodes in the tree.
  *
  * @return integer representing the number of nodes found
  */
@@ -388,7 +298,7 @@ int Solver::count_nodes() const
 }
 
 /**
- * Goes through each tree and prints it's move and valid number of moves.
+ * Prints the the entire subtree of a given node.
  *
  * @param node pointer to subtree to print.
  */
@@ -401,10 +311,9 @@ void Solver::print_tree(const std::shared_ptr<Node> &node) const
     for (int i = 0; i < node->depth; ++i) {
         printf("  ");
     }
-    // print statement
-    if (node == root) {
+    // print statements
+    if (node == root)
         printf("Initial Valid Moves = %lu\n", root->valid_pours.size());
-    }
     else {
         printf("%s:  %lu", node->move_description.c_str(), node->valid_pours.size());
         if (node->complete)
@@ -420,6 +329,7 @@ void Solver::print_tree(const std::shared_ptr<Node> &node) const
 
 /**
  * Public wrapper function to print the contents of an entire tree.
+ * Primary function is for debugging.
  */
 void Solver::print_tree() const
 {
@@ -445,9 +355,6 @@ void Solver::run(char mode)
         case 'p':
             perfect_populate_tree();
             break;
-        case 'h':
-            hybrid_populate_tree();
-            break;
         default:
             exit(1);
     }
@@ -462,9 +369,6 @@ void Solver::run(char mode)
     auto stop_find = high_resolution_clock::now();
     auto duration_to_find_solution = duration_cast<microseconds>(stop_find - start_find);
 
-    // print out the entire tree
-    print_tree();
-
     // print the path to the solution
     std::cout << "Path to solution:\n";
     for (int i = 0; i < path.size(); ++i) {
@@ -473,45 +377,4 @@ void Solver::run(char mode)
     printf("\nTime required to populate the solution tree:\t%lld microseconds\n", duration_to_populate_tree.count());
     printf("Time required to find the solution in the tree:\t%lld microseconds\n", duration_to_find_solution.count());
     printf("The generated tree had %d nodes\n", count_nodes());
-}
-
-/**
- * Wrapper function to perform average execution time test on a gamestate
- *
- * @param repetitions int representing the number of repetitions to average across
- */
-void Solver::r_time_test(int repetitions)
-{
-    using namespace std::chrono;
-
-    double total_population_duration = 0;
-    double total_find_duration = 0;
-
-    // populate the tree several times to measure the average runtime
-    for (int i = 0; i < repetitions; ++i) {
-        // if this isn't the first loop, the tree is already populated
-        if (!root->children.empty()) {
-            // reset the root node
-            root = std::shared_ptr<Node>(new Node(root->state));
-        }
-
-        // populate the tree and measure how long it takes.
-        auto start_pop = high_resolution_clock::now();
-        // if the user chooses to perform a deep solve, it calculates breadth first for the shortest possible solution
-        if (!root->r_populate_children())
-            std::cout << "There was an error, no solution found\n";
-        auto stop_pop = high_resolution_clock::now();
-        total_population_duration += duration_cast<microseconds>(stop_pop - start_pop).count();
-
-        // find the path to the solution
-        auto start_find = high_resolution_clock::now();
-        std::vector<std::shared_ptr<Node>> path;
-        if (!find_solution(root, path))
-            std::cout << "There was an error, could not find path to solution\n";
-        auto stop_find = high_resolution_clock::now();
-        total_find_duration += duration_cast<microseconds>(stop_find - start_find).count();
-    }
-
-    printf("It took on average %.0f microseconds to populate the tree.\n", total_population_duration/repetitions);
-    printf("It took on average %.0f microseconds to find the solution in the tree.\n", total_find_duration/repetitions);
 }

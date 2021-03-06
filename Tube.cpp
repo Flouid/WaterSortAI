@@ -5,7 +5,8 @@
 #include "Tube.h"
 
 /**
- * Output operator for a tube, makes it easy to do i/o with them
+ * Output operator for a tube. Provides all of the functionality expected from an output stream.
+ * Primarily for debugging.
  *
  * @param out output stream
  * @param t tube to output
@@ -24,8 +25,8 @@ std::ostream & operator<<(std::ostream &out, const Tube &t)
 }
 
 /**
- * Input operator for a tube, makes it easy to do i/o with them.
- * Assumes tubes are formatted as four values separated by whitespace.
+ * Input operator for a tube. Provides all of the functionality expected from an input stream.
+ * Primarily for reading from file input.
  *
  * @param in input stream
  * @param t tube to read into
@@ -57,6 +58,7 @@ std::istream & operator>>(std::istream &in, Tube &t)
 
 /**
  * Overloaded equals operator to compare two tubes.
+ * Used in the perfect solver algorithm to track visited states.
  *
  * @param t1 Tube representing the left argument
  * @param t2 Tube representing the right argument
@@ -69,9 +71,9 @@ bool operator==(const Tube &t1, const Tube &t2)
 
 /**
  * Detailed constructor for initializing a tube.
+ * Takes a vector of color values as argument.
  *
- * @param tube_name
- * @param tube_values
+ * @param tube_values vector of string representing the value in each slot
  */
 Tube::Tube(std::vector<std::string> tube_values) : values(std::move(tube_values))
 {
@@ -80,6 +82,7 @@ Tube::Tube(std::vector<std::string> tube_values) : values(std::move(tube_values)
         std::cout << "Assertion failed, invalid tube" << std::endl;
         assert(calculate_is_valid());
     }
+
     free_spaces = calculate_free_spaces();
     top_color_depth = calculate_top_color_depth();
     empty = calculate_is_empty();
@@ -87,7 +90,7 @@ Tube::Tube(std::vector<std::string> tube_values) : values(std::move(tube_values)
 }
 
 /**
- * Checks if a tube is valid. That is, no empty slots beneath a filled one.
+ * Checks if a tube is valid. That is, there are no empty slots beneath a filled one.
  *
  * @return boolean representing if the tube is valid or not.
  */
@@ -118,11 +121,8 @@ bool Tube::calculate_is_valid() const
  */
 bool Tube::calculate_is_empty() const
 {
-    if (std::all_of(values.begin(), values.end(),
-                    [](const std::string &value){return value == "empty";}))
-        return true;
-    else
-        return false;
+    return std::all_of(values.begin(), values.end(),
+                    [](const std::string &value){return value == "empty";});
 }
 
 /**
@@ -196,14 +196,17 @@ std::string Tube::calculate_top_color() const
 }
 
 /**
- * Attempts to "pour" the current tube into a target tube.
- * Can only be successful if the target is empty or the two tubes share top colors.
- * If they share top colors, only pour as many slots as the target has free spaces.
+ * Performs a "pour" operation from the current source tube into another target tube.
+ * Pours are only to be performed if the operation has been deemed valid by is_valid_pour().
+ * Follows all of the rules given in the game WaterSort:
+ *  1. Target must be empty or the tubes must share a top color
+ *  2. Target tube must not be full
+ *  3. Can only pour as many slots as there are free spaces in the target
+ *  4. Source tube must not be empty
  *
  * @param target tube to pour into
- * @return bool representing whether or not the operation was successful.
  */
-bool Tube::pour(Tube &target)
+void Tube::pour(Tube &target)
 {
     // find the index in the target tube of the deepest empty slot
     int deepest_empty_slot;
@@ -240,13 +243,18 @@ bool Tube::pour(Tube &target)
     top_color_depth = calculate_top_color_depth();
     target.top_color_depth = target.calculate_top_color_depth();
     target.top_color = target.calculate_top_color();
-    return true;
 }
 
 /**
  * Checks if pouring to target is possible.
- * It is only possible if the source isn't empty, the target has at least one free space,
- * and the top colors match or the target is empty.
+ * Moves that cannot contribute to a better board state are found to be invalid.
+ * Moves are valid if:
+ *  1. The source is not empty
+ *  2. The target has free spaces
+ *  3. The top colors of the source and target are the same or the target is empty
+ * Moves that cannot contribute:
+ *  1. The target is empty and the source is all one color
+ *  2. It's impossible to pour all of the top color into the target
  *
  * @param target tube
  * @return bool representing whether or not a pour is possible
