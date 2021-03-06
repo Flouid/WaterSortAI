@@ -111,7 +111,7 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const
  * Populates all of the children of a node.
  * For each valid move possible, copies the gamestate to a new child node and performs that move.
  * If a move results in a completed board state, stop and return true. Otherwise, return false.
- * Performs this recursively in a preorder-depth first manner.
+ * Performs this by heuristically guessing the best moves and exploring those paths first.
  *
  * @return bool representing whether or not the node generated children
  */
