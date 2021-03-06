@@ -17,12 +17,15 @@
  */
 class Node {
 public:
+    friend bool operator<(const Node &n1, const Node &n2);
+
     explicit Node(const std::vector<Tube> &tubes) : Node(tubes, "Initialization", 0) {}
     Node(const std::vector<Tube> &game_state, std::string move, int dep);
 
     std::multimap<int, std::pair<int, int>> calculate_valid_pours();
     bool calculate_is_game_complete() const;
     int evaluate_pour(const std::pair<int, int> &pour) const;
+    int evaluate_state() const;
 
     bool r_populate_children();
     bool p_populate_children();
@@ -32,6 +35,7 @@ public:
     std::multimap<int, std::pair<int, int>> valid_pours;
     std::string move_description;
     int depth;
+    int state_score;
     bool complete;
 };
 
@@ -43,7 +47,7 @@ class Solver
 public:
     explicit Solver(const std::vector<Tube> &state) : root(new Node(state)) {}
 
-    void run(bool fast_solve);
+    void run(char mode);
     void r_time_test(int repetitions = 25);
     int count_nodes() const;
     void print_tree() const;
@@ -55,6 +59,7 @@ private:
     void count_nodes(const std::shared_ptr<Node> &node, int &n) const;
     void print_tree(const std::shared_ptr<Node> &node) const;
     bool perfect_populate_tree();
+    bool hybrid_populate_tree();
 };
 
 #endif //WATERSORT_SOLVER_H

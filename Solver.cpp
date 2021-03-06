@@ -5,6 +5,17 @@
 #include "Solver.h"
 
 /**
+ * Allows comparison of two nodes by ordering based on their state scores.
+ *
+ * @param n1 the left argument
+ * @param n2 the right argument
+ * @return bool representing whether or not n1's state score is less than n2's
+ */
+bool operator<(const Node &n1, const Node &n2) {
+    return n1.state_score < n2.state_score;
+}
+
+/**
  * Detailed constructor to create a node.
  * Is given a game state, a pointer to its parent, the last move as a string, and the depth...
  * Determines the number of valid pours and whether or not the board is complete.
@@ -22,6 +33,7 @@ Node::Node(const std::vector<Tube> &game_state, std::string move, int dep)
 
     valid_pours = calculate_valid_pours();
     complete = calculate_is_game_complete();
+    state_score = evaluate_state();
 }
 
 /**
@@ -105,6 +117,34 @@ int Node::evaluate_pour(const std::pair<int, int> &pour) const
     }
 
     return score;
+}
+
+/**
+ * Return a heuristic evaluation of how good the game state is.
+ *
+ * @return integer representing how good the game state is
+ */
+int Node::evaluate_state() const
+{
+    // calculate the number of grouped colors across all tubes
+    int num_grouped_colors = 0;
+    // for each tube...
+    for (const Tube &tube: state) {
+        // for each value in the tube except the last...
+        for (int i = 0; i < 3; ++i) {
+            // increment the number of grouped colors if the color is the same as the one beneath it
+            num_grouped_colors += (tube.get_values()[i] != "empty" && tube.get_values()[i] == tube.get_values()[i + 1]);
+        }
+    }
+    // get the average move score
+    int move_score_sum = 0;
+    // add the move score of each move to the sum
+    for (const auto & valid_pour : valid_pours) {
+        move_score_sum += valid_pour.first;
+    }
+    int average_move_score = move_score_sum / (int)valid_pours.size();
+
+    return num_grouped_colors + average_move_score;
 }
 
 /**
@@ -231,6 +271,54 @@ bool Solver::perfect_populate_tree() {
 }
 
 /**
+ * A totally experimental way of populating the solution tree.
+ * Adds each child node to a map that is sorted by a heuristic evaluation of the game state.
+ * Treat the map like a queue and always look at the last element before removing it from the map.
+ *
+ * @return bool representing whether or not the tree was populated
+ */
+bool Solver::hybrid_populate_tree() {
+    if (root == nullptr)
+        return false;
+
+    // create a queue and push the root
+    std::priority_queue<std::shared_ptr<Node>> queue;
+    queue.push(root);
+
+    // track which board states have already been seen so we can skip them
+    std::vector<std::vector<Tube>> states;
+
+    // continue the core loop until every node has been processed
+    while (!queue.empty()) {
+        // figure out how many nodes are on this level
+        int n = queue.size();
+
+        // while there are still nodes on this level
+        while (n > 0) {
+            // pop the node off of the queue and populate it
+            std::shared_ptr<Node> node = queue.top();
+            queue.pop();
+            // if the state has already been seen, decrement n and continue
+            if (std::find(states.begin(), states.end(), node->state) != states.end()) {
+                n--;
+                continue;
+            }
+            states.push_back(node->state);
+            // otherwise, populate it's children and stop if one of them is a solution
+            if (node->p_populate_children())
+                return true;
+
+            // push all of the children onto the queue
+            for (std::shared_ptr<Node> &child : node->children)
+                queue.push(child);
+            // a parent has been processed
+            n--;
+        }
+    }
+    return false;
+}
+
+/**
  * Perform a depth-first search of the solution tree.
  * Along the way, keep track of the moves required to reach the solution.
  * Since the tree is populated left->right, search the rightmost branches first as that's where the solution should be.
@@ -333,20 +421,25 @@ void Solver::print_tree() const
 /**
  * Wrapper function to populate the tree, find the solution, and print the path to the solution found.
  */
-void Solver::run(bool fast_solve)
+void Solver::run(char mode)
 {
     // time tracking done within this function, locally use this namespace for readability
     using namespace std::chrono;
 
     // populate the tree and measure how long it takes.
     auto start_pop = high_resolution_clock::now();
-    if (fast_solve) {
-        if (!root->r_populate_children())
-            std::cout << "There was an error, could not populate solution\n";
-    }
-    else {
-        if (perfect_populate_tree())
-            std::cout << "There was an error, could not populate solution\n";
+    switch(mode) {
+        case 'f':
+            root->r_populate_children();
+            break;
+        case 'p':
+            perfect_populate_tree();
+            break;
+        case 'h':
+            hybrid_populate_tree();
+            break;
+        default:
+            exit(1);
     }
     auto stop_pop = high_resolution_clock::now();
     auto duration_to_populate_tree = duration_cast<microseconds>(stop_pop - start_pop);

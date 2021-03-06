@@ -59,19 +59,17 @@ string get_filename()
  *
  * @return boolean representing whether or not testing mode is on.
  */
-bool get_mode()
+char get_mode()
 {
     char response;
 
-    cout << "Fast or perfect solve? (f/p): ";
+    cout << "Fast or perfect solve? (f/p/h): ";
     cin >> response;
     cin.ignore(); // the \n character
     cout << endl;
 
-    if (response == 'f')
-        return true;
-    else if (response == 'p')
-        return false;
+    if (response == 'f' || response == 'p' || response == 'h')
+        return response;
     else
         exit(1);
 }
