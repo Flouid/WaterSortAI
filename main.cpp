@@ -63,7 +63,7 @@ char get_mode()
 {
     char response;
 
-    cout << "Fast or perfect solve? (f/p/h): ";
+    cout << "Fast or perfect solve? (f/p): ";
     cin >> response;
     cin.ignore(); // the \n character
     cout << endl;
