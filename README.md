@@ -3,7 +3,7 @@ This is a C++ AI that plays the puzzle game Water Sort / Ball Sort automagically
 
 ## Description
 It has two modes, fast solve mode and perfect solve mode.
-Fast solve will take any level and solve it almost instaneously, but doensn't necessarily generate shortest possible solutions, it is very close though.
+Fast solve will take any level and solve it almost instantly, but doesn't necessarily generate shortest possible solutions, it is very close though.
 Perfect solve will always return a shortest possible path to the solution, but is very performance limited. Using it is not recommended.
 
 ## Getting Started
