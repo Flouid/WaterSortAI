@@ -1,0 +1,12 @@
+purple grey darkblue lime
+orange green red lime
+cyan lime cyan purple
+orange darkblue lime purple
+red red red cyan
+orange darkblue darkblue purple
+pink pink green pink
+orange cyan grey pink
+green green grey grey
+e e e e
+e e e e
+

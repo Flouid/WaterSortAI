@@ -1,0 +1,7 @@
+lime lime pink darkblue
+darkblue pink darkblue orange
+lime red orange darkblue
+pink red lime orange
+pink red orange red
+e e e e
+e e e e

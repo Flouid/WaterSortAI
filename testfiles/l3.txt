@@ -1,0 +1,5 @@
+darkblue red orange darkblue
+darkblue red orange orange
+red orange darkblue red
+e e e e
+e e e e
