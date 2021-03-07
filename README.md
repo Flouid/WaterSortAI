@@ -10,7 +10,7 @@ Perfect solve will always return a shortest possible path to the solution, but i
 Download the files and run the Makefile provided, make sure C++11 or later is installed on your computer. 
 
 ## Usage
-The program works by taking the name of a text file containing the game state and ingesting it into data types it can use before running the analysis. Below is an example file l110.txt:
+The program works by taking the name of a text file containing the game state and ingesting it into data types it can use before running the analysis. It is important that each color be represented as a single word. Below is an example file l110.txt:
 
 ![image](https://user-images.githubusercontent.com/17460504/110222671-e6af1380-7ea1-11eb-9127-c215f04ac32d.png)
 
